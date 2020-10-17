@@ -13,6 +13,10 @@
     "react-scripts": "3.4.3",
     "recharts": "^1.8.5"
   },
+  "devDependencies": {
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "2.1.2"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
