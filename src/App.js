@@ -70,6 +70,11 @@ export default function App() {
       const json = await response.json();
       const newData = [];
 
+      if (!json.timeline) {
+        setData([]);
+        return;
+      }
+
       Object.keys(json.timeline.cases).forEach((key) => {
         const date = parse(key, 'M/d/yy', new Date());
         newData.push({
@@ -99,7 +104,7 @@ export default function App() {
       </div>
       <ResizableBox height={400}>
         <div style={{ width: '100%', height: '100%' }}>
-          {data && countryData && (
+          {data.length && countryData && (
             <>
               <CaseDeathsChart data={data} countryData={countryData} />
               <TrendLineChart data={data} countryData={countryData} />

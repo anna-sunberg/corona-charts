@@ -17,7 +17,7 @@ export default ({ data, countryData }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    if (!countryData || !data) {
+    if (!countryData || !data.length) {
       return;
     }
     if (

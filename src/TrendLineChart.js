@@ -6,6 +6,9 @@ export default ({ data, countryData }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
+    if (!data.length || !countryData) {
+      return;
+    }
     const newChartData = data.slice(data.length - 30).map(({ date, cases }, i) => {
       const runningAverage =
         (cases - data[data.length - 30 + (i - 14)].cases) / (countryData.population / 100000);
