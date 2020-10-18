@@ -14,7 +14,7 @@ import { curveBundle } from 'd3-shape';
 import { formatUnixTime, labelFormatter } from './helpers';
 
 export default ({ data, countryData }) => {
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     if (!countryData || !data.length) {
@@ -43,34 +43,32 @@ export default ({ data, countryData }) => {
     <>
       <span className="chart-title">Cases and deaths 2020</span>
       <ResponsiveContainer>
-        {chartData && (
-          <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-            <YAxis domain={['dataMin', 'dataMax + 10']} hide />
-            <XAxis
-              dataKey="date"
-              type="number"
-              tickCount={30}
-              domain={['dataMin', 'dataMax']}
-              tickFormatter={formatUnixTime}
-            />
-            <Tooltip
-              labelFormatter={labelFormatter}
-              formatter={(value, name) => {
-                return [value, `${name[0].toUpperCase()}${name.split('').splice(1).join('')}`];
-              }}
-            />
-            <CartesianGrid stroke="#f5f5f5" />
-            <Line
-              type={curveBundle}
-              dot={false}
-              dataKey="cases"
-              stroke="#00916E"
-              yAxisId={0}
-              strokeWidth={2}
-            />
-            <Bar type="monotone" dot={false} dataKey="deaths" fill="#FA003F" yAxisId={0} />
-          </ComposedChart>
-        )}
+        <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <YAxis domain={['dataMin', 'dataMax + 10']} hide />
+          <XAxis
+            dataKey="date"
+            type="number"
+            tickCount={30}
+            domain={['dataMin', 'dataMax']}
+            tickFormatter={formatUnixTime}
+          />
+          <Tooltip
+            labelFormatter={labelFormatter}
+            formatter={(value, name) => {
+              return [value, `${name[0].toUpperCase()}${name.split('').splice(1).join('')}`];
+            }}
+          />
+          <CartesianGrid stroke="#f5f5f5" />
+          <Line
+            type={curveBundle}
+            dot={false}
+            dataKey="cases"
+            stroke="#00916E"
+            yAxisId={0}
+            strokeWidth={2}
+          />
+          <Bar type="monotone" dot={false} dataKey="deaths" fill="#FA003F" yAxisId={0} />
+        </ComposedChart>
       </ResponsiveContainer>
     </>
   );

@@ -20,6 +20,9 @@ export default function App() {
 
   const removeFavoriteCountry = (countryToRemove) => {
     const newCountries = countries.filter((c) => c !== countryToRemove);
+    if (!newCountries.length) {
+      newCountries.push(country);
+    }
     if (!newCountries.find((c) => c === country)) {
       setCountry(newCountries[0]);
     }
@@ -52,7 +55,11 @@ export default function App() {
         return;
       }
       const json = await response.json();
-
+      if (Array.isArray(json)) {
+        // API returns an array of countries if no country is specified
+        setCountryData(null);
+        return;
+      }
       setCountryData(json);
     }
     fetchCountryData();
@@ -99,9 +106,6 @@ export default function App() {
     fetchData();
   }, [country, days]);
 
-  if (loading) {
-    return <div className="loader">loading...</div>;
-  }
   return (
     <div className="App" style={{ paddingRight: '10px' }}>
       <div className="top-bar">
@@ -114,16 +118,19 @@ export default function App() {
           removeCountry={removeFavoriteCountry}
         />
       </div>
-      <ResizableBox height={400}>
-        <div style={{ width: '100%', height: '100%' }}>
-          {data.length && countryData && (
-            <>
-              <CaseDeathsChart data={data} countryData={countryData} />
-              <TrendLineChart data={data} countryData={countryData} />
-            </>
-          )}
-        </div>
-      </ResizableBox>
+      {loading && <div className="loader">loading...</div>}
+      {!loading && (
+        <ResizableBox height={400}>
+          <div style={{ width: '100%', height: '100%' }}>
+            {data.length && countryData && (
+              <>
+                <CaseDeathsChart data={data} countryData={countryData} />
+                <TrendLineChart data={data} countryData={countryData} />
+              </>
+            )}
+          </div>
+        </ResizableBox>
+      )}
     </div>
   );
 }

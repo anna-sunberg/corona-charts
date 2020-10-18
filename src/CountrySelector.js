@@ -11,6 +11,9 @@ export default ({ selectCountry, removeCountry, country, countries }) => {
   };
 
   const handleSelect = (value) => {
+    if (!value) {
+      return;
+    }
     selectCountry(value);
     setInputValue('');
   };
@@ -32,10 +35,11 @@ export default ({ selectCountry, removeCountry, country, countries }) => {
           onKeyDown={handleKeyDown}
         />
       </div>
-      {countries.map((availableCountry) => (
+      {countries.map((availableCountry, i) => (
         <div
           className={classnames('country', { selected: availableCountry === country })}
           onClick={() => handleSelect(availableCountry)}
+          key={`${availableCountry}-${i}`}
         >
           {availableCountry}{' '}
           <span className="remove-icon" onClick={(e) => handleRemoveClick(e, availableCountry)}>

@@ -3,7 +3,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis } f
 import { formatUnixTime, labelFormatter } from './helpers';
 
 export default ({ data, countryData }) => {
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     if (!data.length || !countryData) {
@@ -24,33 +24,31 @@ export default ({ data, countryData }) => {
     <>
       <span className="chart-title">14 day average cases / 100 000 population</span>
       <ResponsiveContainer>
-        {chartData && (
-          <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-            <XAxis
-              dataKey="date"
-              type="number"
-              ticks={chartData.map(({ date }) => date)}
-              domain={['dataMin', 'dataMax']}
-              tickFormatter={formatUnixTime}
-            />
+        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <XAxis
+            dataKey="date"
+            type="number"
+            ticks={chartData.map(({ date }) => date)}
+            domain={['dataMin', 'dataMax']}
+            tickFormatter={formatUnixTime}
+          />
 
-            <CartesianGrid stroke="#f5f5f5" />
-            <Tooltip
-              labelFormatter={labelFormatter}
-              formatter={(value) => {
-                return [value, 'Running average'];
-              }}
-            />
-            <Line
-              type="linear"
-              dot={false}
-              dataKey="runningAverage"
-              stroke="#EE6123"
-              yAxisId={0}
-              strokeWidth={2}
-            />
-          </LineChart>
-        )}
+          <CartesianGrid stroke="#f5f5f5" />
+          <Tooltip
+            labelFormatter={labelFormatter}
+            formatter={(value) => {
+              return [value, 'Running average'];
+            }}
+          />
+          <Line
+            type="linear"
+            dot={false}
+            dataKey="runningAverage"
+            stroke="#EE6123"
+            yAxisId={0}
+            strokeWidth={2}
+          />
+        </LineChart>
       </ResponsiveContainer>
     </>
   );
