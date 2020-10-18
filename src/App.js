@@ -15,7 +15,7 @@ export default function App() {
   useEffect(() => {
     async function fetchCountryData() {
       const response = await fetch(
-        `https://disease.sh/v3/covid-19/countries/${country}?strict=true`
+        `https://disease.sh/v3/covid-19/countries/${country}?strict=true&allowNull=true`
       );
       const json = await response.json();
       setCountryData(json);

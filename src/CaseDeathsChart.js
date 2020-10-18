@@ -21,7 +21,7 @@ export default ({ data, countryData }) => {
       return;
     }
     if (
-      countryData.todayCases &&
+      countryData.todayCases !== null &&
       getDay(new Date(countryData.updated)) !== getDay(data[data.length - 1].date)
     ) {
       data.push({
