@@ -25,18 +25,11 @@ export default function App() {
 
   useEffect(() => {
     async function fetchData() {
-      if (!countryData) {
-        return;
-      }
       const response = await fetch(
         `https://disease.sh/v3/covid-19/historical/${country}?lastdays=${days}`
       );
       const json = await response.json();
       const newData = [];
-
-      const latestDate = format(new Date(countryData.updated), 'M/d/yy');
-      json.timeline.cases[latestDate] = countryData.cases;
-      json.timeline.deaths[latestDate] = countryData.deaths;
 
       Object.keys(json.timeline.cases).forEach((key) => {
         const date = parse(key, 'M/d/yy', new Date());
@@ -51,7 +44,7 @@ export default function App() {
       setData(newData.sort(compareAsc));
     }
     fetchData();
-  }, [countryData, days]);
+  }, [country, days]);
 
   return (
     <div className="App" style={{ paddingRight: '20px' }}>
@@ -59,9 +52,9 @@ export default function App() {
       {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}
       <ResizableBox height={400}>
         <div style={{ width: '100%', height: '100%' }}>
-          {data && (
+          {data && countryData && (
             <>
-              <CaseDeathsChart data={data} />
+              <CaseDeathsChart data={data} countryData={countryData} />
               <TrendLineChart data={data} countryData={countryData} />
             </>
           )}

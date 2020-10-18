@@ -9,20 +9,35 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
+import { getDay } from 'date-fns';
 import { curveBundle } from 'd3-shape';
 import { formatUnixTime, labelFormatter } from './helpers';
 
-export default ({ data }) => {
+export default ({ data, countryData }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
+    if (!countryData || !data) {
+      return;
+    }
+    if (
+      countryData.todayCases &&
+      getDay(new Date(countryData.updated)) !== getDay(data[data.length - 1].date)
+    ) {
+      data.push({
+        date: new Date(countryData.updated).valueOf(),
+        cases: countryData.cases,
+        deaths: countryData.deaths
+      });
+    }
+
     const newChartData = data.map(({ date, deaths, cases }, i) => ({
       date: date.valueOf(),
       cases: i > 0 ? cases - data[i - 1].cases : cases,
       deaths: i > 0 ? deaths - data[i - 1].deaths : deaths
     }));
     setChartData(newChartData);
-  }, [data]);
+  }, [countryData, data]);
 
   return (
     <>
