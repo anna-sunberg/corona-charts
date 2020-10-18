@@ -13,31 +13,33 @@ import { getDay } from 'date-fns';
 import { curveBundle } from 'd3-shape';
 import { formatUnixTime, labelFormatter } from './helpers';
 
-export default ({ data, countryData }) => {
+export default ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    if (!countryData || !data.length) {
+    if (!countryData || !historicalData) {
       return;
     }
     if (
       countryData.todayCases !== null &&
-      getDay(new Date(countryData.updated)) !== getDay(data[data.length - 1].date)
+      countryData.country === historicalData.country &&
+      getDay(new Date(countryData.updated)) !==
+        getDay(historicalData.data[historicalData.data.length - 1].date)
     ) {
-      data.push({
+      historicalData.data.push({
         date: new Date(countryData.updated).valueOf(),
         cases: countryData.cases,
         deaths: countryData.deaths
       });
     }
 
-    const newChartData = data.map(({ date, deaths, cases }, i) => ({
+    const newChartData = historicalData.data.map(({ date, deaths, cases }, i) => ({
       date: date.valueOf(),
-      cases: i > 0 ? cases - data[i - 1].cases : cases,
-      deaths: i > 0 ? deaths - data[i - 1].deaths : deaths
+      cases: i > 0 ? cases - historicalData.data[i - 1].cases : cases,
+      deaths: i > 0 ? deaths - historicalData.data[i - 1].deaths : deaths
     }));
     setChartData(newChartData);
-  }, [countryData, data]);
+  }, [countryData, historicalData]);
 
   return (
     <>

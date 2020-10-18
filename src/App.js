@@ -16,7 +16,7 @@ export default function App() {
   const [country, setCountry] = useState(initialCountry);
   const [countries, setCountries] = useState(initialCountries);
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
-  const [data, setData] = useState([]);
+  const [historicalData, setHistoricalData] = useState(null);
   const [countryData, setCountryData] = useState(null);
 
   const removeFavoriteCountry = (countryToRemove) => {
@@ -39,12 +39,12 @@ export default function App() {
   }, [country]);
 
   useEffect(() => {
-    if (countryData && data.length) {
+    if (countryData && historicalData) {
       setLoading(false);
       return;
     }
     setLoading(true);
-  }, [countryData, data]);
+  }, [countryData, historicalData]);
 
   useEffect(() => {
     async function fetchCountryData() {
@@ -83,7 +83,7 @@ export default function App() {
         `https://disease.sh/v3/covid-19/historical/${country}?lastdays=${days}`
       );
       if (response.status !== 200) {
-        setData([]);
+        setHistoricalData(null);
         setErrorMessage(`Failed to fetch historical data for country '${country}'`);
         return;
       }
@@ -91,7 +91,7 @@ export default function App() {
       const newData = [];
 
       if (!json.timeline) {
-        setData([]);
+        setHistoricalData(null);
         return;
       }
 
@@ -105,7 +105,7 @@ export default function App() {
         });
       });
 
-      setData(newData.sort(compareAsc));
+      setHistoricalData({ country: json.country, data: newData.sort(compareAsc) });
     }
     fetchData();
   }, [country, days]);
@@ -132,10 +132,10 @@ export default function App() {
       {!loading && (
         <ResizableBox height={400}>
           <div style={{ width: '100%', height: '100%' }}>
-            {data.length && countryData && (
+            {historicalData && countryData && (
               <>
-                <CaseDeathsChart data={data} countryData={countryData} />
-                <TrendLineChart data={data} countryData={countryData} />
+                <CaseDeathsChart historicalData={historicalData} countryData={countryData} />
+                <TrendLineChart historicalData={historicalData} countryData={countryData} />
               </>
             )}
           </div>
