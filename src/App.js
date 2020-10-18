@@ -56,7 +56,7 @@ export default function App() {
     if (!countries.find((c) => c === countryData.country)) {
       setCountries([...countries, countryData.country]);
     }
-  }, [countryData]);
+  }, [countries, countryData]);
 
   useEffect(() => {
     async function fetchData() {
