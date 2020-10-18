@@ -11,3 +11,28 @@
   bottom: -10px;
   right: -10px;
 }
+
+.top-bar {
+  display: flex;
+  margin-top: 10px;
+  justify-content: space-evenly;
+}
+
+.selected {
+  background-color: #FFC800 !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex > * {
+  margin: 0 5px;
+}
+
+.country {
+  cursor: pointer;
+  padding: 2px 4px;
+  background-color: lightgrey;
+  border-radius: 4px;
+}
