@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import {
   Bar,
   CartesianGrid,
-  Line,
   ComposedChart,
-  Tooltip,
+  Legend,
+  Line,
   ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis
 } from 'recharts';
-import { getDay } from 'date-fns';
+import { isEqual, startOfDay, sub } from 'date-fns';
 import { curveBundle } from 'd3-shape';
 import { formatUnixTime, labelFormatter } from './helpers';
 
@@ -29,6 +30,25 @@ export default ({ historicalData, countryData }) => {
     setChartData(newChartData);
   }, [countryData, historicalData]);
 
+  const yesterdayIndex = historicalData.data.findIndex(({ date }) =>
+    isEqual(startOfDay(date), startOfDay(sub(new Date(), { days: 1 })))
+  );
+  const yesterday = {
+    cases:
+      historicalData.data[yesterdayIndex].cases - historicalData.data[yesterdayIndex - 1].cases,
+    deaths:
+      historicalData.data[yesterdayIndex].deaths - historicalData.data[yesterdayIndex - 1].deaths
+  };
+  const twoDaysAgo = {
+    cases:
+      historicalData.data[yesterdayIndex - 1].cases - historicalData.data[yesterdayIndex - 2].cases,
+    deaths:
+      historicalData.data[yesterdayIndex - 1].deaths -
+      historicalData.data[yesterdayIndex - 2].deaths
+  };
+  const displayYesterday = yesterdayIndex
+    ? `, yesterday: ${yesterday.cases} (${yesterday.deaths}), 2 days ago: ${twoDaysAgo.cases} (${twoDaysAgo.deaths})`
+    : '';
   return (
     <>
       <span className="chart-title">Cases and deaths 2020</span>
@@ -41,7 +61,15 @@ export default ({ historicalData, countryData }) => {
             tickCount={30}
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatUnixTime}
+            label={{
+              value: `Today: ${countryData.todayCases} (deaths: ${
+                countryData.todayDeaths || 0
+              })${displayYesterday}`,
+              position: 'insideBottomRight',
+              offset: -20
+            }}
           />
+          <Legend />
           <Tooltip
             labelFormatter={labelFormatter}
             formatter={(value, name) => {
