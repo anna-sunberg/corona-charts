@@ -20,18 +20,6 @@ export default ({ historicalData, countryData }) => {
     if (!countryData || !historicalData) {
       return;
     }
-    if (
-      countryData.todayCases !== null &&
-      countryData.country === historicalData.country &&
-      getDay(new Date(countryData.updated)) !==
-        getDay(historicalData.data[historicalData.data.length - 1].date)
-    ) {
-      historicalData.data.push({
-        date: new Date(countryData.updated).valueOf(),
-        cases: countryData.cases,
-        deaths: countryData.deaths
-      });
-    }
 
     const newChartData = historicalData.data.map(({ date, deaths, cases }, i) => ({
       date: date.valueOf(),

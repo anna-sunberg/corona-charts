@@ -3,7 +3,7 @@ import CaseDeathsChart from './CaseDeathsChart';
 import TrendLineChart from './TrendLineChart';
 import CountrySelector from './CountrySelector';
 import { ResizableBox } from 'react-resizable';
-import { compareAsc, differenceInDays, format, parse } from 'date-fns';
+import { compareAsc, differenceInDays, format, getDay, parse, startOfDay } from 'date-fns';
 import { useLocalStorage, writeStorage } from '@rehooks/local-storage';
 import './styles.css';
 import 'react-resizable/css/styles.css';
@@ -114,7 +114,28 @@ export default function App() {
     if (!loading) {
       setErrorMessage(null);
     }
-  }, [loading]);
+    if (
+      countryData &&
+      historicalData &&
+      countryData.country === historicalData.country &&
+      countryData.todayCases !== null &&
+      getDay(new Date(countryData.updated)) !==
+        getDay(historicalData.data[historicalData.data.length - 1].date)
+    ) {
+      // historical data doesn't include today
+      setHistoricalData({
+        ...historicalData,
+        data: [
+          ...historicalData.data,
+          {
+            date: startOfDay(new Date(countryData.updated)).valueOf(),
+            cases: countryData.cases,
+            deaths: countryData.deaths
+          }
+        ]
+      });
+    }
+  }, [countryData, historicalData, loading]);
 
   return (
     <div className="App" style={{ paddingRight: '10px' }}>
