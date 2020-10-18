@@ -10,6 +10,7 @@ import 'react-resizable/css/styles.css';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [initialCountries] = useLocalStorage('favoriteCountries', []);
   const [initialCountry] = useLocalStorage('favoriteCountry', 'Finland');
   const [country, setCountry] = useState(initialCountry);
@@ -52,12 +53,14 @@ export default function App() {
       );
       if (response.status !== 200) {
         setCountryData(null);
+        setErrorMessage(`Failed to fetch country '${country}'`);
         return;
       }
       const json = await response.json();
       if (Array.isArray(json)) {
         // API returns an array of countries if no country is specified
         setCountryData(null);
+        setErrorMessage(`Country '${country}' not found`);
         return;
       }
       setCountryData(json);
@@ -81,6 +84,7 @@ export default function App() {
       );
       if (response.status !== 200) {
         setData([]);
+        setErrorMessage(`Failed to fetch historical data for country '${country}'`);
         return;
       }
       const json = await response.json();
@@ -106,6 +110,12 @@ export default function App() {
     fetchData();
   }, [country, days]);
 
+  useEffect(() => {
+    if (!loading) {
+      setErrorMessage(null);
+    }
+  }, [loading]);
+
   return (
     <div className="App" style={{ paddingRight: '10px' }}>
       <div className="top-bar">
@@ -118,7 +128,7 @@ export default function App() {
           removeCountry={removeFavoriteCountry}
         />
       </div>
-      {loading && <div className="loader">loading...</div>}
+      {loading && <div className="loader">{errorMessage ? errorMessage : 'loading...'}</div>}
       {!loading && (
         <ResizableBox height={400}>
           <div style={{ width: '100%', height: '100%' }}>
