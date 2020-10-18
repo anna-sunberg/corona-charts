@@ -68,7 +68,7 @@ export default ({ data, countryData }) => {
               yAxisId={0}
               strokeWidth={2}
             />
-            <Bar type="monotone" dot={false} dataKey="deaths" stroke="#FA003F" yAxisId={0} />
+            <Bar type="monotone" dot={false} dataKey="deaths" fill="#FA003F" yAxisId={0} />
           </ComposedChart>
         )}
       </ResponsiveContainer>
