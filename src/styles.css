@@ -41,3 +41,17 @@
   display: block;
   margin-top: 10px;
 }
+
+.remove-icon {
+  color: grey;
+}
+
+.remove-icon:hover {
+  color: black;
+}
+
+.loader {
+  width: 100%;
+  margin-top: 100px;
+  text-align: center;
+}

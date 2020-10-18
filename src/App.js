@@ -9,6 +9,7 @@ import './styles.css';
 import 'react-resizable/css/styles.css';
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
   const [initialCountries] = useLocalStorage('favoriteCountries', []);
   const [initialCountry] = useLocalStorage('favoriteCountry', 'Finland');
   const [country, setCountry] = useState(initialCountry);
@@ -32,6 +33,14 @@ export default function App() {
   useEffect(() => {
     writeStorage('favoriteCountry', country);
   }, [country]);
+
+  useEffect(() => {
+    if (countryData && data.length) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+  }, [countryData, data]);
 
   useEffect(() => {
     async function fetchCountryData() {
@@ -90,6 +99,9 @@ export default function App() {
     fetchData();
   }, [country, days]);
 
+  if (loading) {
+    return <div className="loader">loading...</div>;
+  }
   return (
     <div className="App" style={{ paddingRight: '10px' }}>
       <div className="top-bar">

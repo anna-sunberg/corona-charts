@@ -23,7 +23,7 @@ export default ({ selectCountry, removeCountry, country, countries }) => {
   return (
     <div className="flex">
       <div>
-        Type country name:{' '}
+        Search countries:{' '}
         <input
           name="country"
           value={inputValue}
@@ -37,7 +37,10 @@ export default ({ selectCountry, removeCountry, country, countries }) => {
           className={classnames('country', { selected: availableCountry === country })}
           onClick={() => handleSelect(availableCountry)}
         >
-          {availableCountry} <span onClick={(e) => handleRemoveClick(e, availableCountry)}>×</span>
+          {availableCountry}{' '}
+          <span className="remove-icon" onClick={(e) => handleRemoveClick(e, availableCountry)}>
+            ×
+          </span>
         </div>
       ))}
     </div>
