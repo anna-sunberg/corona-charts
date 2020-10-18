@@ -22,22 +22,22 @@ export default ({ data, countryData }) => {
 
   return (
     <>
-      <span>14 day average cases / 100 000 population</span>
+      <span className="chart-title">14 day average cases / 100 000 population</span>
       <ResponsiveContainer>
         {chartData && (
           <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <XAxis
               dataKey="date"
               type="number"
-              tickCount={30}
-              domain={['auto', 'auto']}
+              ticks={chartData.map(({ date }) => date)}
+              domain={['dataMin', 'dataMax']}
               tickFormatter={formatUnixTime}
             />
 
             <CartesianGrid stroke="#f5f5f5" />
             <Tooltip
               labelFormatter={labelFormatter}
-              formatter={(value, name) => {
+              formatter={(value) => {
                 return [value, 'Running average'];
               }}
             />

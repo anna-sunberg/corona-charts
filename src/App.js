@@ -91,7 +91,7 @@ export default function App() {
   }, [country, days]);
 
   return (
-    <div className="App" style={{ paddingRight: '20px' }}>
+    <div className="App" style={{ paddingRight: '10px' }}>
       <div className="top-bar">
         Latest data:
         {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}

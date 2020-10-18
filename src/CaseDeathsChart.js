@@ -41,16 +41,16 @@ export default ({ data, countryData }) => {
 
   return (
     <>
-      <span>Cases and deaths 2020</span>
+      <span className="chart-title">Cases and deaths 2020</span>
       <ResponsiveContainer>
         {chartData && (
           <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-            <YAxis domain={['dataMin', 'dataMax + 10']} />
+            <YAxis domain={['dataMin', 'dataMax + 10']} hide />
             <XAxis
               dataKey="date"
               type="number"
               tickCount={30}
-              domain={['auto', 'auto']}
+              domain={['dataMin', 'dataMax']}
               tickFormatter={formatUnixTime}
             />
             <Tooltip
