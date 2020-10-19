@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import { isEqual, startOfDay, sub } from 'date-fns';
 import { curveBundle } from 'd3-shape';
-import { formatUnixTime, labelFormatter } from './helpers';
+import { formatNull, formatUnixTime, labelFormatter } from './helpers';
 
 export default ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
@@ -47,7 +47,9 @@ export default ({ historicalData, countryData }) => {
       historicalData.data[yesterdayIndex - 2].deaths
   };
   const displayYesterday = yesterdayIndex
-    ? `, yesterday: ${yesterday.cases} (${yesterday.deaths}), 2 days ago: ${twoDaysAgo.cases} (${twoDaysAgo.deaths})`
+    ? `, yesterday: ${formatNull(yesterday.cases)} (${formatNull(
+        yesterday.deaths
+      )}), 2 days ago: ${formatNull(twoDaysAgo.cases)} (${formatNull(twoDaysAgo.deaths)})`
     : '';
   return (
     <>
@@ -62,8 +64,8 @@ export default ({ historicalData, countryData }) => {
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatUnixTime}
             label={{
-              value: `Today: ${countryData.todayCases} (deaths: ${
-                countryData.todayDeaths || 0
+              value: `Today: ${formatNull(countryData.todayCases)} (deaths: ${
+                formatNull(countryData.todayDeaths) || 0
               })${displayYesterday}`,
               position: 'insideBottomRight',
               offset: -20

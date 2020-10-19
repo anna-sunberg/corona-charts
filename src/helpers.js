@@ -8,3 +8,5 @@ export const formatUnixTime = (unixTime, formatString = 'd.M') => {
 };
 
 export const labelFormatter = (unixTime) => formatUnixTime(unixTime, 'dd.MM.yy');
+
+export const formatNull = (value) => (value === null ? '-' : value);
