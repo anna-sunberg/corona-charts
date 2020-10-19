@@ -53,7 +53,9 @@ export default ({ historicalData, countryData }) => {
     : '';
   return (
     <>
-      <span className="chart-title">Cases and deaths 2020</span>
+      <span className="chart-title">{`Today: ${formatNull(countryData.todayCases)} (deaths: ${
+        formatNull(countryData.todayDeaths) || 0
+      })${displayYesterday}`}</span>
       <ResponsiveContainer>
         <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
           <YAxis domain={['dataMin', 'dataMax + 10']} hide />
@@ -63,13 +65,6 @@ export default ({ historicalData, countryData }) => {
             tickCount={30}
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatUnixTime}
-            label={{
-              value: `Today: ${formatNull(countryData.todayCases)} (deaths: ${
-                formatNull(countryData.todayDeaths) || 0
-              })${displayYesterday}`,
-              position: 'insideBottomRight',
-              offset: -20
-            }}
           />
           <Legend />
           <Tooltip
