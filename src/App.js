@@ -128,9 +128,11 @@ export default function App() {
         data: [
           ...historicalData.data,
           {
-            date: startOfDay(new Date(countryData.updated)).valueOf(),
-            cases: countryData.cases,
-            deaths: countryData.deaths
+            date: startOfDay(new Date(countryData.updated)),
+            cases:
+              countryData.todayCases + historicalData.data[historicalData.data.length - 1].cases,
+            deaths:
+              countryData.todayDeaths + historicalData.data[historicalData.data.length - 1].deaths
           }
         ]
       });
