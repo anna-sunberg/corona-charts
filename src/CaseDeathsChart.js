@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import { isEqual, startOfDay, sub } from 'date-fns';
 import { curveBundle } from 'd3-shape';
-import { formatNull, formatUnixTime, labelFormatter } from './helpers';
+import { formatNull, formatUnixTime, labelFormatter, roundToHundred } from './helpers';
 
 export default ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
@@ -58,7 +58,12 @@ export default ({ historicalData, countryData }) => {
       })${displayYesterday}`}</span>
       <ResponsiveContainer>
         <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <YAxis domain={['dataMin', 'dataMax + 10']} hide />
+          <YAxis domain={['dataMin', roundToHundred]} />
+          <YAxis
+            domain={[() => 0, (dataMax) => roundToHundred(dataMax * 3)]}
+            yAxisId={1}
+            orientation="right"
+          />
           <XAxis
             dataKey="date"
             type="number"
@@ -82,7 +87,7 @@ export default ({ historicalData, countryData }) => {
             yAxisId={0}
             strokeWidth={2}
           />
-          <Bar type="monotone" dot={false} dataKey="deaths" fill="#FA003F" yAxisId={0} />
+          <Bar type="monotone" dot={false} dataKey="deaths" fill="#FA003F" yAxisId={1} />
         </ComposedChart>
       </ResponsiveContainer>
     </>

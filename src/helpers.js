@@ -10,3 +10,5 @@ export const formatUnixTime = (unixTime, formatString = 'd.M') => {
 export const labelFormatter = (unixTime) => formatUnixTime(unixTime, 'dd.MM.yy');
 
 export const formatNull = (value) => (value === null ? '-' : value);
+
+export const roundToHundred = (value) => Math.round(value / 100) * 100;
