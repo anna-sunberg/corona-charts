@@ -13,78 +13,62 @@ export default function App() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [initialCountries] = useLocalStorage('favoriteCountries', []);
   const [initialCountry] = useLocalStorage('favoriteCountry', 'Finland');
-  const [country, setCountry] = useState(initialCountry);
-  const [countries, setCountries] = useState(initialCountries);
+  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+  const [favoriteCountries, setFavoriteCountries] = useState(initialCountries);
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
   const [historicalData, setHistoricalData] = useState(null);
   const [countryData, setCountryData] = useState(null);
+  const [allCountries, setAllCountries] = useState(null);
 
   const removeFavoriteCountry = (countryToRemove) => {
-    const newCountries = countries.filter((c) => c !== countryToRemove);
+    const newCountries = favoriteCountries.filter((c) => c !== countryToRemove);
     if (!newCountries.length) {
-      newCountries.push(country);
+      newCountries.push(selectedCountry);
     }
-    if (!newCountries.find((c) => c === country)) {
-      setCountry(newCountries[0]);
+    if (!newCountries.find((c) => c === selectedCountry)) {
+      setSelectedCountry(newCountries[0]);
     }
-    setCountries(newCountries);
+    setFavoriteCountries(newCountries);
   };
 
   useEffect(() => {
-    writeStorage('favoriteCountries', countries);
-  }, [countries]);
+    writeStorage('favoriteCountries', favoriteCountries);
+  }, [favoriteCountries]);
 
   useEffect(() => {
-    writeStorage('favoriteCountry', country);
-  }, [country]);
+    writeStorage('favoriteCountry', selectedCountry);
+  }, [selectedCountry]);
 
   useEffect(() => {
-    if (countryData && historicalData) {
+    if (allCountries && historicalData) {
       setLoading(false);
       return;
     }
     setLoading(true);
-  }, [countryData, historicalData]);
+  }, [allCountries, historicalData]);
 
   useEffect(() => {
-    async function fetchCountryData() {
-      const response = await fetch(
-        `https://disease.sh/v3/covid-19/countries/${country}?strict=true&allowNull=true`
-      );
+    async function fetchAllCountries() {
+      const response = await fetch(`https://disease.sh/v3/covid-19/countries?allowNull=true`);
       if (response.status !== 200) {
-        setCountryData(null);
-        setErrorMessage(`Failed to fetch country '${country}'`);
+        setErrorMessage(`Failed to fetch countries`);
         return;
       }
       const json = await response.json();
-      if (Array.isArray(json)) {
-        // API returns an array of countries if no country is specified
-        setCountryData(null);
-        setErrorMessage(`Country '${country}' not found`);
-        return;
-      }
-      setCountryData(json);
+      setAllCountries({ data: json });
+      setCountryData(json.find(({ country }) => country === selectedCountry) || json[0]);
     }
-    fetchCountryData();
-  }, [country, days]);
-
-  useEffect(() => {
-    if (!countryData) {
-      return;
-    }
-    if (!countries.find((c) => c === countryData.country)) {
-      setCountries([...countries, countryData.country]);
-    }
-  }, [countries, countryData]);
+    fetchAllCountries();
+  }, [days, selectedCountry]);
 
   useEffect(() => {
     async function fetchData() {
       const response = await fetch(
-        `https://disease.sh/v3/covid-19/historical/${country}?lastdays=${days}`
+        `https://disease.sh/v3/covid-19/historical/${selectedCountry}?lastdays=${days}`
       );
       if (response.status !== 200) {
         setHistoricalData(null);
-        setErrorMessage(`Failed to fetch historical data for country '${country}'`);
+        setErrorMessage(`Failed to fetch historical data for country '${selectedCountry}'`);
         return;
       }
       const json = await response.json();
@@ -108,7 +92,7 @@ export default function App() {
       setHistoricalData({ country: json.country, data: newData.sort(compareAsc) });
     }
     fetchData();
-  }, [country, days]);
+  }, [selectedCountry, days]);
 
   useEffect(() => {
     if (!loading) {
@@ -145,9 +129,9 @@ export default function App() {
         Latest data:
         {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}
         <CountrySelector
-          country={(countryData && countryData.country) || country}
-          countries={countries}
-          selectCountry={setCountry}
+          country={(countryData && countryData.country) || selectedCountry}
+          countries={favoriteCountries}
+          selectCountry={setSelectedCountry}
           removeCountry={removeFavoriteCountry}
         />
       </div>
