@@ -3,7 +3,7 @@ import CaseDeathsChart from './CaseDeathsChart';
 import TrendLineChart from './TrendLineChart';
 import CountrySelector from './CountrySelector';
 import { ResizableBox } from 'react-resizable';
-import { compareAsc, differenceInDays, format, getDay, parse, startOfDay } from 'date-fns';
+import { compareAsc, differenceInDays, getDay, parse, startOfDay } from 'date-fns';
 import { useLocalStorage, writeStorage } from '@rehooks/local-storage';
 import './styles.css';
 import 'react-resizable/css/styles.css';
@@ -19,6 +19,7 @@ export default function App() {
   const [historicalData, setHistoricalData] = useState(null);
   const [countryData, setCountryData] = useState(null);
   const [allCountries, setAllCountries] = useState(null);
+  const [availableCountries, setAvailableCountries] = useState([]);
 
   const removeFavoriteCountry = (countryToRemove) => {
     const newCountries = favoriteCountries.filter((c) => c !== countryToRemove);
@@ -30,6 +31,12 @@ export default function App() {
     }
     setFavoriteCountries(newCountries);
   };
+
+  useEffect(() => {
+    if (!favoriteCountries.find((c) => c === selectedCountry)) {
+      setFavoriteCountries([...favoriteCountries, selectedCountry]);
+    }
+  }, [favoriteCountries, selectedCountry]);
 
   useEffect(() => {
     writeStorage('favoriteCountries', favoriteCountries);
@@ -56,6 +63,7 @@ export default function App() {
       }
       const json = await response.json();
       setAllCountries({ data: json });
+      setAvailableCountries(json.map(({ country }) => country));
       setCountryData(json.find(({ country }) => country === selectedCountry) || json[0]);
     }
     fetchAllCountries();
@@ -126,11 +134,10 @@ export default function App() {
   return (
     <div className="App" style={{ paddingRight: '10px' }}>
       <div className="top-bar">
-        Latest data:
-        {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}
         <CountrySelector
-          country={(countryData && countryData.country) || selectedCountry}
-          countries={favoriteCountries}
+          allCountries={availableCountries}
+          country={selectedCountry}
+          favoriteCountries={favoriteCountries}
           selectCountry={setSelectedCountry}
           removeCountry={removeFavoriteCountry}
         />

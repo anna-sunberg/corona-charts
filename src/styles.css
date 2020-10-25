@@ -24,6 +24,7 @@
 
 .flex {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .flex > * {
@@ -32,9 +33,12 @@
 
 .country {
   cursor: pointer;
-  padding: 2px 4px;
+  margin-bottom: 4px;
+  line-height: 24px;
+  padding: 2px 6px;
   background-color: lightgrey;
   border-radius: 4px;
+  display: flex;
 }
 
 .chart-title {
@@ -44,6 +48,7 @@
 
 .remove-icon {
   color: grey;
+  padding-left: 8px;
 }
 
 .remove-icon:hover {

@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
-import { isEqual, startOfDay, sub } from 'date-fns';
+import { format, isEqual, startOfDay, sub } from 'date-fns';
 import { curveBundle } from 'd3-shape';
 import { formatNull, formatUnixTime, labelFormatter, roundToHundred } from './helpers';
 
@@ -56,6 +56,10 @@ export default ({ historicalData, countryData }) => {
       <span className="chart-title">{`Today: ${formatNull(countryData.todayCases)} (deaths: ${
         formatNull(countryData.todayDeaths) || 0
       })${displayYesterday}`}</span>
+      <span>
+        Latest data:
+        {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}
+      </span>
       <ResponsiveContainer>
         <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
           <YAxis domain={['dataMin', roundToHundred]} />
