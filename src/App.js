@@ -5,6 +5,7 @@ import CountrySelector from './CountrySelector';
 import { ResizableBox } from 'react-resizable';
 import { compareAsc, differenceInDays, getDay, parse, startOfDay } from 'date-fns';
 import { useLocalStorage, writeStorage } from '@rehooks/local-storage';
+import { useHistory, useParams } from 'react-router-dom';
 import './styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -12,8 +13,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [initialCountries] = useLocalStorage('favoriteCountries', []);
-  const [initialCountry] = useLocalStorage('favoriteCountry', 'Finland');
-  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+  const [initialCountry] = useLocalStorage('favoriteCountry', 'finland');
+  const { country: paramCountry } = useParams();
+  const history = useHistory();
+  const [selectedCountry, setSelectedCountry] = useState(paramCountry || initialCountry);
   const [favoriteCountries, setFavoriteCountries] = useState(initialCountries);
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
   const [historicalData, setHistoricalData] = useState(null);
@@ -21,8 +24,17 @@ export default function App() {
   const [allCountries, setAllCountries] = useState(null);
   const [availableCountries, setAvailableCountries] = useState([]);
 
+  const selectCountry = (c) => {
+    setSelectedCountry(c);
+    history.push(`/${c}`);
+  };
+
+  useEffect(() => {
+    setSelectedCountry(paramCountry);
+  }, [paramCountry]);
+
   const removeFavoriteCountry = (countryToRemove) => {
-    const newCountries = favoriteCountries.filter((c) => c !== countryToRemove);
+    const newCountries = favoriteCountries.filter((c) => c.toLowerCase() !== countryToRemove);
     if (!newCountries.length) {
       newCountries.push(selectedCountry);
     }
@@ -138,7 +150,7 @@ export default function App() {
           allCountries={availableCountries}
           country={selectedCountry}
           favoriteCountries={favoriteCountries}
-          selectCountry={setSelectedCountry}
+          selectCountry={selectCountry}
           removeCountry={removeFavoriteCountry}
         />
       </div>

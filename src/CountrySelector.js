@@ -11,7 +11,7 @@ export default ({ selectCountry, removeCountry, country, allCountries, favoriteC
     if (!value) {
       return;
     }
-    selectCountry(value);
+    selectCountry(value.toLowerCase());
     setInputValue('');
   };
 
@@ -57,22 +57,27 @@ export default ({ selectCountry, removeCountry, country, allCountries, favoriteC
         onSuggestionsFetchRequested={onSuggestionsFetchRequested}
         onSuggestionsClearRequested={onSuggestionsClearRequested}
         onSuggestionSelected={onSuggestionSelected}
-        getSuggestionValue={(value) => value}
+        getSuggestionValue={(value) => value.toLowerCase()}
         renderSuggestion={renderSuggestion}
         inputProps={inputProps}
       />
-      {favoriteCountries.map((availableCountry, i) => (
-        <div
-          className={classnames('country', { selected: availableCountry === country })}
-          onClick={() => handleSelect(availableCountry)}
-          key={`${availableCountry}-${i}`}
-        >
-          {availableCountry}{' '}
-          <span className="remove-icon" onClick={(e) => handleRemoveClick(e, availableCountry)}>
-            ×
-          </span>
-        </div>
-      ))}
+      {favoriteCountries.map((availableCountry_, i) => {
+        const availableCountry = availableCountry_.toLowerCase();
+        return (
+          <div
+            className={classnames('country', {
+              selected: availableCountry.toLowerCase() === country
+            })}
+            onClick={() => handleSelect(availableCountry)}
+            key={`${availableCountry}-${i}`}
+          >
+            {availableCountry}{' '}
+            <span className="remove-icon" onClick={(e) => handleRemoveClick(e, availableCountry)}>
+              ×
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 };
