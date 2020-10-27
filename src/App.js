@@ -17,7 +17,10 @@ export default function App() {
   const { country: paramCountry } = useParams();
   const history = useHistory();
   const [selectedCountry, setSelectedCountry] = useState(paramCountry || initialCountry);
-  const [favoriteCountries, setFavoriteCountries] = useState(initialCountries);
+  // TODO: remove temporary fix for faulty values in local storage
+  const [favoriteCountries, setFavoriteCountries] = useState(
+    initialCountries.filter((c) => c && c !== 'undefined').map((c) => c.toLowerCase())
+  );
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
   const [historicalData, setHistoricalData] = useState(null);
   const [countryData, setCountryData] = useState(null);
@@ -30,6 +33,9 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (!paramCountry) {
+      return;
+    }
     setSelectedCountry(paramCountry);
   }, [paramCountry]);
 
