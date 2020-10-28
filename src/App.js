@@ -44,7 +44,7 @@ export default function App() {
     if (!newCountries.length) {
       newCountries.push(selectedCountry);
     }
-    if (!newCountries.find((c) => c === selectedCountry)) {
+    if (!newCountries.find((c) => c.toLowerCase() === selectedCountry)) {
       setSelectedCountry(newCountries[0]);
     }
     setFavoriteCountries(newCountries);
@@ -82,7 +82,9 @@ export default function App() {
       const json = await response.json();
       setAllCountries({ data: json });
       setAvailableCountries(json.map(({ country }) => country));
-      setCountryData(json.find(({ country }) => country === selectedCountry) || json[0]);
+      setCountryData(
+        json.find(({ country }) => country.toLowerCase() === selectedCountry) || json[0]
+      );
     }
     fetchAllCountries();
   }, [days, selectedCountry]);
