@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { formatUnixTime, labelFormatter } from './helpers';
 
-export default ({ historicalData, countryData }) => {
+const TrendLineChart = ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
@@ -69,4 +69,5 @@ export default ({ historicalData, countryData }) => {
   );
 };
 
+export default TrendLineChart;
 // next chart color: #3E2F5B

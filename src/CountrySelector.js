@@ -3,7 +3,13 @@ import classnames from 'classnames';
 import Autosuggest from 'react-autosuggest';
 import './CountrySelector.css';
 
-export default ({ selectCountry, removeCountry, country, allCountries, favoriteCountries }) => {
+const CountrySelector = ({
+  selectCountry,
+  removeCountry,
+  country,
+  allCountries,
+  favoriteCountries
+}) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState(allCountries);
 
@@ -81,3 +87,5 @@ export default ({ selectCountry, removeCountry, country, allCountries, favoriteC
     </div>
   );
 };
+
+export default CountrySelector;

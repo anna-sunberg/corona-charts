@@ -14,7 +14,7 @@ import { format, isEqual, startOfDay, sub } from 'date-fns';
 import { curveBundle } from 'd3-shape';
 import { formatNull, formatUnixTime, labelFormatter, roundToHundred } from './helpers';
 
-export default ({ historicalData, countryData }) => {
+const CaseDeathsChart = ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
@@ -97,3 +97,5 @@ export default ({ historicalData, countryData }) => {
     </>
   );
 };
+
+export default CaseDeathsChart;
