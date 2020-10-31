@@ -152,7 +152,7 @@ export default function App() {
   }, [countryData, historicalData, loading]);
 
   return (
-    <div className="App" style={{ paddingRight: '10px' }}>
+    <div className="App">
       <div className="top-bar">
         <CountrySelector
           allCountries={availableCountries}

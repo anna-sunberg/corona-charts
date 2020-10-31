@@ -12,10 +12,17 @@ import {
 } from 'recharts';
 import { format, isEqual, startOfDay, sub } from 'date-fns';
 import { curveBundle } from 'd3-shape';
-import { formatNull, formatUnixTime, labelFormatter, roundToHundred } from './helpers';
+import {
+  formatNull,
+  formatUnixTime,
+  labelFormatter,
+  roundToHundred,
+  useWindowDimensions
+} from './helpers';
 
 const CaseDeathsChart = ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     if (!countryData || !historicalData) {
@@ -62,11 +69,12 @@ const CaseDeathsChart = ({ historicalData, countryData }) => {
       </span>
       <ResponsiveContainer>
         <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <YAxis domain={['dataMin', roundToHundred]} />
+          <YAxis domain={['dataMin', roundToHundred]} hide={width < 800} />
           <YAxis
             domain={[() => 0, (dataMax) => roundToHundred(dataMax * 3)]}
             yAxisId={1}
             orientation="right"
+            hide={width < 800}
           />
           <XAxis
             dataKey="date"
