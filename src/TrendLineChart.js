@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
-import { formatUnixTime, labelFormatter } from './helpers';
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
+
+import { formatUnixTime, labelFormatter, useWindowDimensions } from './helpers';
 
 const TrendLineChart = ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     if (!historicalData || !countryData) {
@@ -37,8 +48,16 @@ const TrendLineChart = ({ historicalData, countryData }) => {
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatUnixTime}
           />
-
+          <YAxis allowDecimals={false} hide={width < 800} tickCount={5} />
+          <YAxis
+            yAxisId={1}
+            tickCount={5}
+            allowDecimals={false}
+            orientation="right"
+            hide={width < 800}
+          />
           <CartesianGrid stroke="#f5f5f5" />
+          <Legend />
           <Tooltip
             labelFormatter={labelFormatter}
             formatter={(value, name) => {
