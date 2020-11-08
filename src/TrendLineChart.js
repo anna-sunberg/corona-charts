@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -12,39 +12,19 @@ import {
 
 import { formatUnixTime, labelFormatter, useWindowDimensions } from './helpers';
 
-const TrendLineChart = ({ historicalData, countryData }) => {
-  const [chartData, setChartData] = useState([]);
+const TrendLineChart = ({ chartData }) => {
   const { width } = useWindowDimensions();
-
-  useEffect(() => {
-    if (!historicalData || !countryData) {
-      return;
-    }
-    const newChartData = historicalData.data
-      .slice(historicalData.data.length - 30)
-      .map(({ date, cases }, i) => {
-        const total14Days =
-          cases - historicalData.data[historicalData.data.length - 30 + (i - 14)].cases;
-        const runningAveragePer100K = total14Days / (countryData.population / 100000);
-        const runningAverage = total14Days / 14;
-        return {
-          date: date.valueOf(),
-          runningAverage: Math.round(runningAverage),
-          runningAveragePer100K: Math.round(runningAveragePer100K * 100) / 100
-        };
-      });
-    setChartData(newChartData);
-  }, [historicalData, countryData]);
+  const trendLineChartData = chartData.slice(chartData.length - 31);
 
   return (
     <>
       <span className="chart-title">14 day average cases / 100 000 population</span>
       <ResponsiveContainer>
-        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+        <LineChart data={trendLineChartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
           <XAxis
             dataKey="date"
             type="number"
-            ticks={chartData.map(({ date }) => date)}
+            ticks={trendLineChartData.map(({ date }) => date)}
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatUnixTime}
           />

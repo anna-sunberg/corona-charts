@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import classnames from 'classnames';
 import Autosuggest from 'react-autosuggest';
 import './CountrySelector.css';
@@ -10,8 +10,8 @@ const CountrySelector = ({
   allCountries,
   favoriteCountries
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [suggestions, setSuggestions] = useState(allCountries);
+  const [inputValue, setInputValue] = React.useState('');
+  const [suggestions, setSuggestions] = React.useState(allCountries);
 
   const handleSelect = (value) => {
     if (!value) {

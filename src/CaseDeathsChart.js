@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import {
   Bar,
   CartesianGrid,
@@ -10,68 +10,26 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
-import { format, isEqual, startOfDay, sub } from 'date-fns';
-import { curveBundle } from 'd3-shape';
+import { format } from 'date-fns';
+import { useTextYesterday } from './useChartData';
 import {
   formatNull,
   formatUnixTime,
   labelFormatter,
+  nameToStartCase,
   roundToHundred,
   useWindowDimensions
 } from './helpers';
 
-const CaseDeathsChart = ({ historicalData, countryData }) => {
-  const [chartData, setChartData] = useState([]);
-  const [displayYesterday, setDisplayYesterday] = useState('');
+const CaseDeathsChart = ({ historicalData, countryData, chartData }) => {
   const { width } = useWindowDimensions();
+  const { textYesterday } = useTextYesterday({ historicalData });
 
-  useEffect(() => {
-    if (!countryData || !historicalData) {
-      return;
-    }
-
-    const newChartData = historicalData.data.map(({ date, deaths, cases }, i) => ({
-      date: date.valueOf(),
-      cases: i > 0 ? cases - historicalData.data[i - 1].cases : cases,
-      deaths: i > 0 ? deaths - historicalData.data[i - 1].deaths : deaths
-    }));
-    setChartData(newChartData);
-  }, [countryData, historicalData]);
-
-  useEffect(() => {
-    const yesterdayIndex = historicalData.data.findIndex(({ date }) =>
-      isEqual(startOfDay(date), startOfDay(sub(new Date(), { days: 1 })))
-    );
-    if (yesterdayIndex === -1) {
-      setDisplayYesterday('');
-      return;
-    }
-
-    const yesterday = {
-      cases:
-        historicalData.data[yesterdayIndex].cases - historicalData.data[yesterdayIndex - 1].cases,
-      deaths:
-        historicalData.data[yesterdayIndex].deaths - historicalData.data[yesterdayIndex - 1].deaths
-    };
-    const twoDaysAgo = {
-      cases:
-        historicalData.data[yesterdayIndex - 1].cases -
-        historicalData.data[yesterdayIndex - 2].cases,
-      deaths:
-        historicalData.data[yesterdayIndex - 1].deaths -
-        historicalData.data[yesterdayIndex - 2].deaths
-    };
-    setDisplayYesterday(
-      `, yesterday: ${formatNull(yesterday.cases)} (${formatNull(
-        yesterday.deaths
-      )}), 2 days ago: ${formatNull(twoDaysAgo.cases)} (${formatNull(twoDaysAgo.deaths)})`
-    );
-  }, [historicalData]);
   return (
     <>
       <span className="chart-title">{`Today: ${formatNull(countryData.todayCases)} (deaths: ${
         formatNull(countryData.todayDeaths) || 0
-      })${displayYesterday}`}</span>
+      })${textYesterday}`}</span>
       <span>
         Latest data:
         {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}
@@ -96,15 +54,23 @@ const CaseDeathsChart = ({ historicalData, countryData }) => {
           <Tooltip
             labelFormatter={labelFormatter}
             formatter={(value, name) => {
-              return [value, `${name[0].toUpperCase()}${name.split('').splice(1).join('')}`];
+              return [value, nameToStartCase(name)];
             }}
           />
           <CartesianGrid stroke="#f5f5f5" />
           <Line
-            type={curveBundle}
+            type="basis"
             dot={false}
             dataKey="cases"
             stroke="#00916E"
+            yAxisId={0}
+            strokeWidth={2}
+          />
+          <Line
+            type="linear"
+            dot={false}
+            dataKey="runningAverage"
+            stroke="#EE6123"
             yAxisId={0}
             strokeWidth={2}
           />

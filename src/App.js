@@ -6,6 +6,7 @@ import { ResizableBox } from 'react-resizable';
 import { compareAsc, differenceInDays, getDay, parse, startOfDay } from 'date-fns';
 import { useLocalStorage, writeStorage } from '@rehooks/local-storage';
 import { useHistory, useParams } from 'react-router-dom';
+import { useChartData } from './useChartData';
 import './styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -26,6 +27,7 @@ export default function App() {
   const [countryData, setCountryData] = useState(null);
   const [allCountries, setAllCountries] = useState(null);
   const [availableCountries, setAvailableCountries] = useState([]);
+  const { chartData } = useChartData({ historicalData, countryData });
 
   const selectCountry = (c) => {
     setSelectedCountry(c);
@@ -87,7 +89,7 @@ export default function App() {
       );
     }
     fetchAllCountries();
-  }, [days, selectedCountry]);
+  }, [selectedCountry]);
 
   useEffect(() => {
     async function fetchData() {
@@ -168,8 +170,12 @@ export default function App() {
           <div style={{ width: '100%', height: '100%' }}>
             {historicalData && countryData && (
               <>
-                <CaseDeathsChart historicalData={historicalData} countryData={countryData} />
-                <TrendLineChart historicalData={historicalData} countryData={countryData} />
+                <CaseDeathsChart
+                  historicalData={historicalData}
+                  countryData={countryData}
+                  chartData={chartData}
+                />
+                <TrendLineChart chartData={chartData} />
               </>
             )}
           </div>
