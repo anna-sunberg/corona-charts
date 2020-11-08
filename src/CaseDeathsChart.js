@@ -22,6 +22,7 @@ import {
 
 const CaseDeathsChart = ({ historicalData, countryData }) => {
   const [chartData, setChartData] = useState([]);
+  const [displayYesterday, setDisplayYesterday] = useState('');
   const { width } = useWindowDimensions();
 
   useEffect(() => {
@@ -37,27 +38,35 @@ const CaseDeathsChart = ({ historicalData, countryData }) => {
     setChartData(newChartData);
   }, [countryData, historicalData]);
 
-  const yesterdayIndex = historicalData.data.findIndex(({ date }) =>
-    isEqual(startOfDay(date), startOfDay(sub(new Date(), { days: 1 })))
-  );
-  const yesterday = {
-    cases:
-      historicalData.data[yesterdayIndex].cases - historicalData.data[yesterdayIndex - 1].cases,
-    deaths:
-      historicalData.data[yesterdayIndex].deaths - historicalData.data[yesterdayIndex - 1].deaths
-  };
-  const twoDaysAgo = {
-    cases:
-      historicalData.data[yesterdayIndex - 1].cases - historicalData.data[yesterdayIndex - 2].cases,
-    deaths:
-      historicalData.data[yesterdayIndex - 1].deaths -
-      historicalData.data[yesterdayIndex - 2].deaths
-  };
-  const displayYesterday = yesterdayIndex
-    ? `, yesterday: ${formatNull(yesterday.cases)} (${formatNull(
+  useEffect(() => {
+    const yesterdayIndex = historicalData.data.findIndex(({ date }) =>
+      isEqual(startOfDay(date), startOfDay(sub(new Date(), { days: 1 })))
+    );
+    if (yesterdayIndex === -1) {
+      setDisplayYesterday('');
+      return;
+    }
+
+    const yesterday = {
+      cases:
+        historicalData.data[yesterdayIndex].cases - historicalData.data[yesterdayIndex - 1].cases,
+      deaths:
+        historicalData.data[yesterdayIndex].deaths - historicalData.data[yesterdayIndex - 1].deaths
+    };
+    const twoDaysAgo = {
+      cases:
+        historicalData.data[yesterdayIndex - 1].cases -
+        historicalData.data[yesterdayIndex - 2].cases,
+      deaths:
+        historicalData.data[yesterdayIndex - 1].deaths -
+        historicalData.data[yesterdayIndex - 2].deaths
+    };
+    setDisplayYesterday(
+      `, yesterday: ${formatNull(yesterday.cases)} (${formatNull(
         yesterday.deaths
       )}), 2 days ago: ${formatNull(twoDaysAgo.cases)} (${formatNull(twoDaysAgo.deaths)})`
-    : '';
+    );
+  }, [historicalData]);
   return (
     <>
       <span className="chart-title">{`Today: ${formatNull(countryData.todayCases)} (deaths: ${
