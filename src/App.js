@@ -155,31 +155,34 @@ export default function App() {
 
   return (
     <div className="App">
-      <div className="top-bar">
-        <CountrySelector
-          allCountries={availableCountries}
-          country={selectedCountry}
-          favoriteCountries={favoriteCountries}
-          selectCountry={selectCountry}
-          removeCountry={removeFavoriteCountry}
-        />
-      </div>
       {loading && <div className="loader">{errorMessage ? errorMessage : 'loading...'}</div>}
       {!loading && (
-        <ResizableBox height={400}>
-          <div style={{ width: '100%', height: '100%' }}>
-            {historicalData && countryData && (
-              <>
-                <CaseDeathsChart
-                  historicalData={historicalData}
-                  countryData={countryData}
-                  chartData={chartData}
-                />
-                <TrendLineChart chartData={chartData} />
-              </>
-            )}
+        <>
+          <div className="top-bar">
+            <CountrySelector
+              allCountries={availableCountries}
+              country={selectedCountry}
+              favoriteCountries={favoriteCountries}
+              selectCountry={selectCountry}
+              removeCountry={removeFavoriteCountry}
+            />
           </div>
-        </ResizableBox>
+
+          <ResizableBox height={400}>
+            <div style={{ width: '100%', height: '100%' }}>
+              {historicalData && countryData && (
+                <>
+                  <CaseDeathsChart
+                    historicalData={historicalData}
+                    countryData={countryData}
+                    chartData={chartData}
+                  />
+                  <TrendLineChart chartData={chartData} />
+                </>
+              )}
+            </div>
+          </ResizableBox>
+        </>
       )}
     </div>
   );

@@ -46,7 +46,6 @@
   background-color: lightgrey;
   border-radius: 4px;
   display: flex;
-  text-transform: capitalize;
 }
 
 .chart-title {

@@ -50,6 +50,8 @@ const CountrySelector = ({
 
   const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
 
+  const getFormatted = (country) => suggestions.find((s) => s.toLowerCase() === country);
+
   const inputProps = {
     placeholder: 'Select a country',
     value: inputValue,
@@ -67,18 +69,19 @@ const CountrySelector = ({
         renderSuggestion={renderSuggestion}
         inputProps={inputProps}
       />
-      {favoriteCountries.map((availableCountry_, i) => {
-        const availableCountry = availableCountry_.toLowerCase();
+      {favoriteCountries.map((_favoriteCountry, i) => {
+        const favoriteCountry = _favoriteCountry.toLowerCase();
+
         return (
           <div
             className={classnames('country', {
-              selected: availableCountry.toLowerCase() === country
+              selected: favoriteCountry.toLowerCase() === country
             })}
-            onClick={() => handleSelect(availableCountry)}
-            key={`${availableCountry}-${i}`}
+            onClick={() => handleSelect(favoriteCountry)}
+            key={`${favoriteCountry}-${i}`}
           >
-            {availableCountry}{' '}
-            <span className="remove-icon" onClick={(e) => handleRemoveClick(e, availableCountry)}>
+            {getFormatted(favoriteCountry)}{' '}
+            <span className="remove-icon" onClick={(e) => handleRemoveClick(e, favoriteCountry)}>
               ×
             </span>
           </div>
