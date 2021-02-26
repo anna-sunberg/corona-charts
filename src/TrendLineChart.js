@@ -10,7 +10,7 @@ import {
   YAxis
 } from 'recharts';
 
-import { formatUnixTime, labelFormatter, useWindowDimensions } from './helpers';
+import { formatUnixTime, labelFormatter, nameToStartCase, useWindowDimensions } from './helpers';
 
 const TrendLineChart = ({ chartData }) => {
   const { width } = useWindowDimensions();
@@ -37,7 +37,7 @@ const TrendLineChart = ({ chartData }) => {
             hide={width < 800}
           />
           <CartesianGrid stroke="#f5f5f5" />
-          <Legend />
+          <Legend formatter={(name) => nameToStartCase(name)} />
           <Tooltip
             labelFormatter={labelFormatter}
             formatter={(value, name) => {

@@ -50,7 +50,7 @@ const CaseDeathsChart = ({ historicalData, countryData, chartData }) => {
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatUnixTime}
           />
-          <Legend />
+          <Legend formatter={(name) => nameToStartCase(name)} />
           <Tooltip
             labelFormatter={labelFormatter}
             formatter={(value, name) => {
