@@ -62,7 +62,7 @@ const CaseDeathsChart = ({ historicalData, countryData, chartData }) => {
             type="basis"
             dot={false}
             dataKey="cases"
-            stroke="#00916E"
+            stroke="#1982C4"
             yAxisId={0}
             strokeWidth={2}
           />
@@ -70,11 +70,19 @@ const CaseDeathsChart = ({ historicalData, countryData, chartData }) => {
             type="linear"
             dot={false}
             dataKey="runningAverage"
-            stroke="#EE6123"
+            stroke="#6A4C93"
             yAxisId={0}
             strokeWidth={2}
           />
-          <Bar type="monotone" dot={false} dataKey="deaths" fill="#FA003F" yAxisId={1} />
+          <Line
+            type="linear"
+            dot={false}
+            dataKey="deathsRunningAverage"
+            stroke="#FFCA3A"
+            yAxisId={1}
+            strokeWidth={2}
+          />
+          <Bar type="monotone" dot={false} dataKey="deaths" fill="#FF595E" yAxisId={1} />
         </ComposedChart>
       </ResponsiveContainer>
     </>

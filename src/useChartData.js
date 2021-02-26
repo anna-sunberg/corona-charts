@@ -13,12 +13,16 @@ export const useChartData = ({ historicalData, countryData }) => {
       const index14DaysAgo = i - 14;
       const total14Days =
         cases - historicalData.data[index14DaysAgo >= 0 ? index14DaysAgo : 0].cases;
+      const totalDeaths14Days =
+        deaths - historicalData.data[index14DaysAgo >= 0 ? index14DaysAgo : 0].deaths;
       const runningAveragePer100K = total14Days / (countryData.population / 100000);
       const runningAverage = total14Days / 14;
+      const deathsRunningAverage = totalDeaths14Days / 14;
       return {
         date: date.valueOf(),
         cases: i > 0 ? cases - historicalData.data[i - 1].cases : cases,
         deaths: i > 0 ? deaths - historicalData.data[i - 1].deaths : deaths,
+        deathsRunningAverage: Math.round(deathsRunningAverage),
         runningAverage: Math.round(runningAverage),
         runningAveragePer100K: Math.round(runningAveragePer100K * 100) / 100
       };

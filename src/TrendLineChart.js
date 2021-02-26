@@ -50,7 +50,7 @@ const TrendLineChart = ({ chartData }) => {
             type="linear"
             dot={false}
             dataKey="runningAverage"
-            stroke="#EE6123"
+            stroke="#6A4C93"
             yAxisId={0}
             strokeWidth={2}
           />
@@ -58,7 +58,15 @@ const TrendLineChart = ({ chartData }) => {
             type="linear"
             dot={false}
             dataKey="runningAveragePer100K"
-            stroke="#E0CA3C"
+            stroke="#8AC926"
+            yAxisId={1}
+            strokeWidth={2}
+          />
+          <Line
+            type="linear"
+            dot={false}
+            dataKey="deathsRunningAverage"
+            stroke="#FFCA3A"
             yAxisId={1}
             strokeWidth={2}
           />
