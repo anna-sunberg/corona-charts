@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
+import startCase from 'lodash.startcase';
 
 export const formatUnixTime = (unixTime, formatString = 'd.M') => {
   if (!isFinite(unixTime)) {
@@ -40,11 +41,6 @@ export const useWindowDimensions = () => {
 };
 
 export const nameToStartCase = (name) => {
-  const letters = name.split('');
-  name.split('').forEach((l, i) => {
-    if (l.toUpperCase() === l) {
-      letters.splice(i, 0, ' ');
-    }
-  });
-  return `${letters[0].toUpperCase()}${letters.splice(1).join('').toLowerCase()}`;
+  const words = startCase(name);
+  return `${words[0]}${words.substring(1).toLowerCase()}`;
 };

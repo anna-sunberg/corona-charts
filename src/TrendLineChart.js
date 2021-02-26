@@ -40,11 +40,7 @@ const TrendLineChart = ({ chartData }) => {
           <Legend formatter={(name) => nameToStartCase(name)} />
           <Tooltip
             labelFormatter={labelFormatter}
-            formatter={(value, name) => {
-              const displayName =
-                name === 'runningAverage' ? 'Running average' : 'Running average per 100k';
-              return [value, displayName];
-            }}
+            formatter={(value, name) => [value, nameToStartCase(name)]}
           />
           <Line
             type="linear"
@@ -77,4 +73,3 @@ const TrendLineChart = ({ chartData }) => {
 };
 
 export default TrendLineChart;
-// next chart color: #3E2F5B
