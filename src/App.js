@@ -35,7 +35,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!paramCountry) {
+    if (!paramCountry || paramCountry === selectedCountry) {
       return;
     }
     setSelectedCountry(paramCountry);
@@ -47,7 +47,7 @@ export default function App() {
       newCountries.push(selectedCountry);
     }
     if (!newCountries.find((c) => c.toLowerCase() === selectedCountry)) {
-      setSelectedCountry(newCountries[0]);
+      selectCountry(newCountries[0]);
     }
     setFavoriteCountries(newCountries);
   };
@@ -155,7 +155,11 @@ export default function App() {
 
   return (
     <div className="App">
-      {loading && <div className="loader">{errorMessage ? errorMessage : 'loading...'}</div>}
+      {loading && (
+        <div className="app-loader">
+          <button className="button is-loading">Loading</button>
+        </div>
+      )}
       {!loading && (
         <>
           <div className="top-bar">
@@ -164,7 +168,7 @@ export default function App() {
               country={selectedCountry}
               favoriteCountries={favoriteCountries}
               selectCountry={selectCountry}
-              removeCountry={removeFavoriteCountry}
+              removeFavoriteCountry={removeFavoriteCountry}
             />
           </div>
 

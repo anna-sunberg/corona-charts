@@ -25,6 +25,11 @@
   justify-content: space-evenly;
 }
 
+.top-bar > .flex {
+  justify-content: space-between;
+  width: 100%;
+}
+
 .selected {
   background-color: #FFC800 !important;
 }
@@ -48,6 +53,15 @@
   display: flex;
 }
 
+.tabs a {
+  padding: 0.2em 1em;
+}
+
+.tabs.is-toggle li.is-active a {
+  background-color: #1982C4;
+  border-color: #1982C4;
+}
+
 .chart-title {
   display: block;
   margin-top: 10px;
@@ -62,8 +76,14 @@
   color: black;
 }
 
-.loader {
-  width: 100%;
-  margin-top: 100px;
-  text-align: center;
+.app-loader {
+  margin-top: calc(50vh - 40px);
+  margin-left: 10px;
+}
+.button-remove-favorite {
+  height: 32px;
+}
+
+.input {
+  height: 32px;
 }

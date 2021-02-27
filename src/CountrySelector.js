@@ -5,7 +5,7 @@ import './CountrySelector.css';
 
 const CountrySelector = ({
   selectCountry,
-  removeCountry,
+  removeFavoriteCountry,
   country,
   allCountries,
   favoriteCountries
@@ -23,11 +23,6 @@ const CountrySelector = ({
 
   const onSuggestionSelected = (_, { suggestionValue }) => {
     handleSelect(suggestionValue);
-  };
-
-  const handleRemoveClick = (e, availableCountry) => {
-    e.stopPropagation();
-    removeCountry(availableCountry);
   };
 
   const getSuggestions = (value) => {
@@ -50,43 +45,54 @@ const CountrySelector = ({
 
   const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
 
-  const getFormatted = (country) => suggestions.find((s) => s.toLowerCase() === country);
+  const getFormatted = (country) => allCountries.find((s) => s.toLowerCase() === country);
 
   const inputProps = {
     placeholder: 'Select a country',
     value: inputValue,
-    onChange: (_, { newValue }) => setInputValue(newValue)
+    onChange: (_, { newValue }) => setInputValue(newValue),
+    className: 'input is-primary'
   };
 
   return (
     <div className="flex">
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={onSuggestionsClearRequested}
-        onSuggestionSelected={onSuggestionSelected}
-        getSuggestionValue={(value) => value.toLowerCase()}
-        renderSuggestion={renderSuggestion}
-        inputProps={inputProps}
-      />
-      {favoriteCountries.map((_favoriteCountry, i) => {
-        const favoriteCountry = _favoriteCountry.toLowerCase();
-
-        return (
-          <div
-            className={classnames('country', {
-              selected: favoriteCountry.toLowerCase() === country
+      <div className="flex">
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          onSuggestionSelected={onSuggestionSelected}
+          getSuggestionValue={(value) => value.toLowerCase()}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputProps}
+        />
+        <div className="tabs is-toggle">
+          <ul>
+            {favoriteCountries.map((_favoriteCountry, i) => {
+              const favoriteCountry = _favoriteCountry.toLowerCase();
+              return (
+                <li
+                  className={classnames({
+                    'is-active': favoriteCountry.toLowerCase() === country
+                  })}
+                  onClick={() => handleSelect(favoriteCountry)}
+                  key={`${favoriteCountry}-${i}`}
+                >
+                  <a>
+                    <span>{getFormatted(favoriteCountry)} </span>
+                  </a>
+                </li>
+              );
             })}
-            onClick={() => handleSelect(favoriteCountry)}
-            key={`${favoriteCountry}-${i}`}
-          >
-            {getFormatted(favoriteCountry)}{' '}
-            <span className="remove-icon" onClick={(e) => handleRemoveClick(e, favoriteCountry)}>
-              ×
-            </span>
-          </div>
-        );
-      })}
+          </ul>
+        </div>
+      </div>
+      <button
+        className="button is-outlined is-danger button-remove-favorite"
+        onClick={() => removeFavoriteCountry(country)}
+      >
+        <span>Remove favorite</span>
+      </button>
     </div>
   );
 };
