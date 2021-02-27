@@ -39,7 +39,7 @@ export default function App() {
       return;
     }
     setSelectedCountry(paramCountry);
-  }, [paramCountry]);
+  }, [paramCountry, selectedCountry]);
 
   const removeFavoriteCountry = (countryToRemove) => {
     const newCountries = favoriteCountries.filter((c) => c.toLowerCase() !== countryToRemove);
@@ -160,7 +160,8 @@ export default function App() {
           <button className="button is-loading">Loading</button>
         </div>
       )}
-      {!loading && (
+      {errorMessage}
+      {!loading && !errorMessage && (
         <>
           <div className="top-bar">
             <CountrySelector

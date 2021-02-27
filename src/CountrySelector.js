@@ -78,7 +78,7 @@ const CountrySelector = ({
                   onClick={() => handleSelect(favoriteCountry)}
                   key={`${favoriteCountry}-${i}`}
                 >
-                  <a>
+                  <a href={`/#/${favoriteCountry}`}>
                     <span>{getFormatted(favoriteCountry)} </span>
                   </a>
                 </li>
