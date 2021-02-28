@@ -5,6 +5,7 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
   const dropdownRef = React.useRef(null);
+  const inputRef = React.useRef(null);
 
   React.useEffect(() => {
     const listener = (e) => {
@@ -33,7 +34,10 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
             className="button"
             aria-haspopup="true"
             aria-controls="dropdown-menu"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={() => {
+              setDropdownOpen(!dropdownOpen);
+              setTimeout(() => inputRef.current.focus(), 50);
+            }}
           >
             <span>{getFormatted(country)}</span>
             <span className="icon is-small">
@@ -51,6 +55,7 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
                   className="input is-transparent"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.currentTarget.value)}
+                  ref={inputRef}
                 />
                 <span className="icon is-left">
                   <i className="fa fa-search"></i>

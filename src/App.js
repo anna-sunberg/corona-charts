@@ -10,11 +10,13 @@ import { useChartData } from './useChartData';
 import './styles.css';
 import 'react-resizable/css/styles.css';
 
+const DEFAULT_COUNTRY = 'finland';
+
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [initialCountries] = useLocalStorage('favoriteCountries', []);
-  const [initialCountry] = useLocalStorage('favoriteCountry', 'finland');
+  const [initialCountry] = useLocalStorage('favoriteCountry', DEFAULT_COUNTRY);
   const { country: paramCountry } = useParams();
   const history = useHistory();
   const [selectedCountry, setSelectedCountry] = useState(paramCountry || initialCountry);
@@ -76,50 +78,50 @@ export default function App() {
 
   useEffect(() => {
     async function fetchAllCountries() {
-      const response = await fetch(`https://disease.sh/v3/covid-19/countries?allowNull=true`);
-      if (response.status !== 200) {
+      try {
+        const response = await fetch(`https://disease.sh/v3/covid-19/countries?allowNull=true`);
+        const json = await response.json();
+        setAllCountries({ data: json });
+        setAvailableCountries(json.map(({ country }) => country));
+        setCountryData(
+          json.find(({ country }) => country.toLowerCase() === selectedCountry) || json[0]
+        );
+      } catch (err) {
         setErrorMessage(`Failed to fetch countries`);
-        return;
       }
-      const json = await response.json();
-      setAllCountries({ data: json });
-      setAvailableCountries(json.map(({ country }) => country));
-      setCountryData(
-        json.find(({ country }) => country.toLowerCase() === selectedCountry) || json[0]
-      );
     }
     fetchAllCountries();
   }, [selectedCountry]);
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch(
-        `https://disease.sh/v3/covid-19/historical/${selectedCountry}?lastdays=${days}`
-      );
-      if (response.status !== 200) {
+      try {
+        const response = await fetch(
+          `https://disease.sh/v3/covid-19/historical/${selectedCountry}?lastdays=${days}`
+        );
+        const json = await response.json();
+        const newData = [];
+
+        if (!json.timeline) {
+          setHistoricalData(null);
+          return;
+        }
+
+        Object.keys(json.timeline.cases).forEach((key) => {
+          const date = parse(key, 'M/d/yy', new Date());
+          newData.push({
+            date,
+            cases: json.timeline.cases[key],
+            deaths: json.timeline.deaths[key],
+            recovered: json.timeline.recovered[key]
+          });
+        });
+
+        setHistoricalData({ country: json.country, data: newData.sort(compareAsc) });
+      } catch (err) {
         setHistoricalData(null);
         setErrorMessage(`Failed to fetch historical data for country '${selectedCountry}'`);
-        return;
       }
-      const json = await response.json();
-      const newData = [];
-
-      if (!json.timeline) {
-        setHistoricalData(null);
-        return;
-      }
-
-      Object.keys(json.timeline.cases).forEach((key) => {
-        const date = parse(key, 'M/d/yy', new Date());
-        newData.push({
-          date,
-          cases: json.timeline.cases[key],
-          deaths: json.timeline.deaths[key],
-          recovered: json.timeline.recovered[key]
-        });
-      });
-
-      setHistoricalData({ country: json.country, data: newData.sort(compareAsc) });
     }
     fetchData();
   }, [selectedCountry, days]);
@@ -160,7 +162,7 @@ export default function App() {
           <button className="button is-loading">Loading</button>
         </div>
       )}
-      {errorMessage}
+      {errorMessage && <a href={`/#/${DEFAULT_COUNTRY}`}>Refresh</a>}
       {!loading && !errorMessage && (
         <>
           <CountrySelector
