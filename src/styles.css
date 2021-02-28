@@ -1,11 +1,10 @@
 .App {
   font-family: sans-serif;
   text-align: center;
-
 }
 
 @media only screen and (min-width: 800px) {
-  .App {
+  .react-resizable {
     padding-right: 10px;
   }
 }
@@ -21,40 +20,16 @@
 
 .top-bar {
   display: flex;
-  margin-top: 10px;
-  justify-content: space-evenly;
+  padding: 10px 20px;
 }
 
-.top-bar > .flex {
-  justify-content: space-between;
-  width: 100%;
-}
-
-.selected {
-  background-color: #FFC800 !important;
+.top-bar > a {
+  margin: 6px 0 0 20px;
 }
 
 .flex {
   display: flex;
   flex-wrap: wrap;
-}
-
-.flex > * {
-  margin: 0 5px;
-}
-
-.country {
-  cursor: pointer;
-  margin-bottom: 4px;
-  line-height: 24px;
-  padding: 2px 6px;
-  background-color: lightgrey;
-  border-radius: 4px;
-  display: flex;
-}
-
-.tabs a {
-  padding: 0.2em 1em;
 }
 
 .tabs.is-toggle li.is-active a {
@@ -67,23 +42,25 @@
   margin-top: 10px;
 }
 
-.remove-icon {
-  color: grey;
-  padding-left: 8px;
-}
-
-.remove-icon:hover {
-  color: black;
+.input, .field .control.has-icons-left .icon {
+  height: 32px;
 }
 
 .app-loader {
   margin-top: calc(50vh - 40px);
   margin-left: 10px;
 }
-.button-remove-favorite {
+.NavBar .button,
+.NavBar .title {
   height: 32px;
+ }
+
+.remove-favorite {
+  position: absolute;
+  margin: 3px 0 0 15px;
+  cursor: pointer;
 }
 
-.input {
-  height: 32px;
+.remove-favorite:hover {
+  color: #C00;
 }

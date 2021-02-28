@@ -1,99 +1,115 @@
 import * as React from 'react';
 import classnames from 'classnames';
-import Autosuggest from 'react-autosuggest';
-import './CountrySelector.css';
 
-const CountrySelector = ({
-  selectCountry,
-  removeFavoriteCountry,
-  country,
-  allCountries,
-  favoriteCountries
-}) => {
+const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favoriteCountries }) => {
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
-  const [suggestions, setSuggestions] = React.useState(allCountries);
+  const dropdownRef = React.useRef(null);
 
-  const handleSelect = (value) => {
-    if (!value) {
-      return;
-    }
-    selectCountry(value.toLowerCase());
-    setInputValue('');
-  };
-
-  const onSuggestionSelected = (_, { suggestionValue }) => {
-    handleSelect(suggestionValue);
-  };
-
-  const getSuggestions = (value) => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
-
-    return inputLength === 0
-      ? []
-      : allCountries.filter((c) => c.toLowerCase().slice(0, inputLength) === inputValue);
-  };
-
-  const onSuggestionsFetchRequested = ({ value }) => {
-    setSuggestions(getSuggestions(value));
-  };
-
-  // Autosuggest will call this function every time you need to clear suggestions.
-  const onSuggestionsClearRequested = () => {
-    setSuggestions(allCountries);
-  };
-
-  const renderSuggestion = (suggestion) => <div>{suggestion}</div>;
+  React.useEffect(() => {
+    const listener = (e) => {
+      if (!dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener('mousedown', listener);
+    return () => document.removeEventListener('mousedown', listener);
+  }, []);
 
   const getFormatted = (country) => allCountries.find((s) => s.toLowerCase() === country);
 
-  const inputProps = {
-    placeholder: 'Select a country',
-    value: inputValue,
-    onChange: (_, { newValue }) => setInputValue(newValue),
-    className: 'input is-primary'
+  const onRemoveFavoriteCountry = (e, favoriteCountry) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeFavoriteCountry(favoriteCountry);
   };
 
   return (
-    <div className="flex">
-      <div className="flex">
-        <Autosuggest
-          suggestions={suggestions}
-          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={onSuggestionsClearRequested}
-          onSuggestionSelected={onSuggestionSelected}
-          getSuggestionValue={(value) => value.toLowerCase()}
-          renderSuggestion={renderSuggestion}
-          inputProps={inputProps}
-        />
-        <div className="tabs is-toggle">
-          <ul>
-            {favoriteCountries.map((_favoriteCountry, i) => {
-              const favoriteCountry = _favoriteCountry.toLowerCase();
-              return (
-                <li
-                  className={classnames({
-                    'is-active': favoriteCountry.toLowerCase() === country
-                  })}
-                  onClick={() => handleSelect(favoriteCountry)}
-                  key={`${favoriteCountry}-${i}`}
-                >
-                  <a href={`/#/${favoriteCountry}`}>
-                    <span>{getFormatted(favoriteCountry)} </span>
+    <nav className="NavBar top-bar" role="navigation" aria-label="main navigation">
+      <div className={classnames('dropdown', { 'is-active': dropdownOpen })} ref={dropdownRef}>
+        <div className="dropdown-trigger">
+          <button
+            className="button"
+            aria-haspopup="true"
+            aria-controls="dropdown-menu"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <span>{getFormatted(country)}</span>
+            <span className="icon is-small">
+              <i className="fa fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div className="dropdown-menu" id="dropdown-menu" role="menu">
+          <div className="dropdown-content">
+            <div className="field dropdown-item">
+              <div className="control has-icons-left">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="input is-transparent"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.currentTarget.value)}
+                />
+                <span className="icon is-left">
+                  <i className="fa fa-search"></i>
+                </span>
+              </div>
+            </div>
+            {favoriteCountries
+              .filter((entry) => entry.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+              .map((_favoriteCountry, i) => {
+                const favoriteCountry = _favoriteCountry.toLowerCase();
+                return (
+                  <>
+                    <a
+                      className={classnames('dropdown-item', {
+                        'is-active': favoriteCountry.toLowerCase() === country
+                      })}
+                      onClick={() => setDropdownOpen(false)}
+                      href={`/#/${favoriteCountry}`}
+                      key={`${favoriteCountry}-${i}`}
+                    >
+                      <span>{getFormatted(favoriteCountry)}</span>
+                      <span
+                        className="icon is-small remove-favorite"
+                        onClick={(e) => onRemoveFavoriteCountry(e, favoriteCountry)}
+                      >
+                        <i className="fa fa-times" aria-hidden="true"></i>
+                      </span>
+                    </a>
+                  </>
+                );
+              })}
+            <hr className="dropdown-divider" />
+            {allCountries
+              .map((entry) => [entry.toLowerCase(), entry])
+              .filter(([entry]) => favoriteCountries.indexOf(entry) === -1)
+              .filter(([entry]) => entry.indexOf(inputValue.toLowerCase()) > -1)
+              .map(([entry, entryFormatted], i) => {
+                return (
+                  <a
+                    className={classnames('dropdown-item', {
+                      'is-active': entry === country
+                    })}
+                    onClick={() => setDropdownOpen(false)}
+                    href={`/#/${entry}`}
+                    key={`${entry}-${i}`}
+                  >
+                    {entryFormatted}
                   </a>
-                </li>
-              );
-            })}
-          </ul>
+                );
+              })}
+          </div>
         </div>
       </div>
-      <button
-        className="button is-outlined is-danger button-remove-favorite"
-        onClick={() => removeFavoriteCountry(country)}
-      >
-        <span>Remove favorite</span>
-      </button>
-    </div>
+      <a href="https://corona-charts.xyz">
+        <h2 className="title is-5">
+          <i className="fa fa-virus" aria-hidden="true"></i> Corona charts
+        </h2>
+      </a>
+    </nav>
   );
 };
 

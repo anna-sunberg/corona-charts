@@ -163,15 +163,13 @@ export default function App() {
       {errorMessage}
       {!loading && !errorMessage && (
         <>
-          <div className="top-bar">
-            <CountrySelector
-              allCountries={availableCountries}
-              country={selectedCountry}
-              favoriteCountries={favoriteCountries}
-              selectCountry={selectCountry}
-              removeFavoriteCountry={removeFavoriteCountry}
-            />
-          </div>
+          <CountrySelector
+            allCountries={availableCountries}
+            country={selectedCountry}
+            favoriteCountries={favoriteCountries}
+            selectCountry={selectCountry}
+            removeFavoriteCountry={removeFavoriteCountry}
+          />
 
           <ResizableBox height={400}>
             <div style={{ width: '100%', height: '100%' }}>
