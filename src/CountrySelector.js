@@ -10,7 +10,7 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
   React.useEffect(() => {
     const listener = (e) => {
       if (!dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
+        closeDropdown();
         e.stopPropagation();
       }
     };
@@ -24,6 +24,11 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
     e.preventDefault();
     e.stopPropagation();
     removeFavoriteCountry(favoriteCountry);
+  };
+
+  const closeDropdown = () => {
+    setInputValue('');
+    setDropdownOpen(false);
   };
 
   return (
@@ -72,7 +77,7 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
                       className={classnames('dropdown-item', {
                         'is-active': favoriteCountry.toLowerCase() === country
                       })}
-                      onClick={() => setDropdownOpen(false)}
+                      onClick={closeDropdown}
                       href={`/#/${favoriteCountry}`}
                       key={`${favoriteCountry}-${i}`}
                     >
@@ -98,7 +103,7 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
                     className={classnames('dropdown-item', {
                       'is-active': entry === country
                     })}
-                    onClick={() => setDropdownOpen(false)}
+                    onClick={closeDropdown}
                     href={`/#/${entry}`}
                     key={`${entry}-${i}`}
                   >
