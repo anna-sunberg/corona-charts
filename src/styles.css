@@ -64,3 +64,9 @@
 .remove-favorite:hover {
   color: #C00;
 }
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke-dasharray: 2, 2;
+  stroke: #333;
+}
