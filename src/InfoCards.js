@@ -8,15 +8,16 @@ const InfoCards = ({ countryData, recentData, vaccinationData }) => {
     <div className="columns is-desktop InfoCards">
       <div className="column">
         <div className="card">
-          <h6 className="title is-6">New cases (deaths)</h6>
+          <h6 className="title is-6">🦠 New cases (☠️ deaths)</h6>
           <div>
-            Today: {formatNull(countryData.todayCases)} ({formatNull(countryData.todayDeaths)})
+            Today: 🦠 {formatNull(countryData.todayCases)} (☠️ ️
+            {formatNull(countryData.todayDeaths)})
           </div>
           <div>
-            Yesterday: {yesterday.cases} ({yesterday.deaths})
+            Yesterday: 🦠 {yesterday.cases} (☠️ {yesterday.deaths})
           </div>
           <div>
-            2 days ago: {twoDaysAgo.cases} ({twoDaysAgo.deaths})
+            2 days ago: 🦠 {twoDaysAgo.cases} (☠️ {twoDaysAgo.deaths})
           </div>
         </div>
       </div>
@@ -24,7 +25,7 @@ const InfoCards = ({ countryData, recentData, vaccinationData }) => {
         <div className="column">
           <div className="card">
             <h6 className="title is-6">Vaccine coverage</h6>
-            <div>Vaccinated: {vaccinationData.coverage}</div>
+            <div>Vaccinated: 💉 {vaccinationData.coverage}</div>
             <div>% of population: {vaccinationData.percentage} %</div>
           </div>
         </div>
