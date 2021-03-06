@@ -115,9 +115,9 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
         </div>
       </div>
       <a href="https://corona-charts.xyz">
-        <h2 className="title is-5">
+        <h6 className="title is-6">
           <i className="fa fa-virus" aria-hidden="true"></i> Corona charts
-        </h2>
+        </h6>
       </a>
     </nav>
   );

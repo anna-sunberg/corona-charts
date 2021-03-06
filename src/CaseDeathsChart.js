@@ -11,9 +11,7 @@ import {
   YAxis
 } from 'recharts';
 import { format } from 'date-fns';
-import { useTextYesterday } from './useChartData';
 import {
-  formatNull,
   formatUnixTime,
   labelFormatter,
   nameToStartCase,
@@ -21,15 +19,11 @@ import {
   useWindowDimensions
 } from './helpers';
 
-const CaseDeathsChart = ({ historicalData, countryData, chartData }) => {
+const CaseDeathsChart = ({ countryData, chartData }) => {
   const { width } = useWindowDimensions();
-  const { textYesterday } = useTextYesterday({ historicalData });
 
   return (
     <>
-      <span className="chart-title">{`Today: ${formatNull(countryData.todayCases)} (deaths: ${
-        formatNull(countryData.todayDeaths) || 0
-      })${textYesterday}`}</span>
       <span>
         Latest data:
         {countryData && ` ${format(new Date(countryData.updated), 'dd.MM.yy HH:mm')}`}

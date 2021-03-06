@@ -70,3 +70,11 @@
   stroke-dasharray: 2, 2;
   stroke: #333;
 }
+
+.InfoCards {
+  margin: 0 9px;
+}
+
+.InfoCards .card {
+  padding: 10px 0;
+}

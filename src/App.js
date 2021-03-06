@@ -2,11 +2,12 @@ import * as React from 'react';
 import CaseDeathsChart from './CaseDeathsChart';
 import TrendLineChart from './TrendLineChart';
 import CountrySelector from './CountrySelector';
+import InfoCards from './InfoCards';
 import { ResizableBox } from 'react-resizable';
 import { compareAsc, differenceInDays, getDay, parse, startOfDay } from 'date-fns';
 import { useLocalStorage, writeStorage } from '@rehooks/local-storage';
 import { useHistory, useParams } from 'react-router-dom';
-import { useChartData } from './useChartData';
+import { useChartData, useRecentData, useVaccinationData } from './useChartData';
 import './styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -30,18 +31,23 @@ export default function App() {
   const [allCountries, setAllCountries] = React.useState(null);
   const [availableCountries, setAvailableCountries] = React.useState([]);
   const { chartData } = useChartData({ historicalData, countryData });
+  const { vaccinationData } = useVaccinationData({
+    selectedCountry,
+    countryData
+  });
+  const { recentData } = useRecentData({ historicalData });
 
   const selectCountry = (c) => {
-    setSelectedCountry(c);
+    setLoading(true);
     history.push(`/${c}`);
   };
 
   React.useEffect(() => {
-    if (!paramCountry || paramCountry === selectedCountry) {
+    if (!paramCountry) {
       return;
     }
     setSelectedCountry(paramCountry);
-  }, [paramCountry, selectedCountry]);
+  }, [paramCountry]);
 
   const removeFavoriteCountry = (countryToRemove) => {
     const newCountries = favoriteCountries.filter((c) => c.toLowerCase() !== countryToRemove);
@@ -69,15 +75,8 @@ export default function App() {
   }, [selectedCountry]);
 
   React.useEffect(() => {
-    if (allCountries && historicalData) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-  }, [allCountries, historicalData]);
-
-  React.useEffect(() => {
     async function fetchAllCountries() {
+      setLoading(true);
       try {
         const response = await fetch(`https://disease.sh/v3/covid-19/countries?allowNull=true`);
         const json = await response.json();
@@ -96,6 +95,7 @@ export default function App() {
       if (!allCountries) {
         return;
       }
+      setLoading(true);
       try {
         const response = await fetch(
           `https://disease.sh/v3/covid-19/historical/${selectedCountry}?lastdays=${days}`
@@ -133,9 +133,6 @@ export default function App() {
   }, [selectedCountry, days, allCountries]);
 
   React.useEffect(() => {
-    if (!loading) {
-      setErrorMessage(null);
-    }
     if (
       countryData &&
       historicalData &&
@@ -159,7 +156,19 @@ export default function App() {
         ]
       });
     }
-  }, [countryData, historicalData, loading]);
+  }, [countryData, historicalData]);
+
+  React.useEffect(() => {
+    if (historicalData && countryData && recentData && vaccinationData) {
+      setLoading(false);
+    }
+  }, [historicalData, countryData, recentData, vaccinationData]);
+
+  React.useEffect(() => {
+    if (!loading) {
+      setErrorMessage(null);
+    }
+  }, [loading]);
 
   return (
     <div className="App">
@@ -183,16 +192,18 @@ export default function App() {
             selectCountry={selectCountry}
             removeFavoriteCountry={removeFavoriteCountry}
           />
-
+          <InfoCards
+            countryData={countryData}
+            historicalData={historicalData}
+            selectedCountry={selectedCountry}
+            vaccinationData={vaccinationData}
+            recentData={recentData}
+          />
           <ResizableBox height={400}>
             <div style={{ width: '100%', height: '100%' }}>
               {historicalData && countryData && (
                 <>
-                  <CaseDeathsChart
-                    historicalData={historicalData}
-                    countryData={countryData}
-                    chartData={chartData}
-                  />
+                  <CaseDeathsChart countryData={countryData} chartData={chartData} />
                   <TrendLineChart chartData={chartData} />
                 </>
               )}
