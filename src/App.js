@@ -80,6 +80,9 @@ export default function App() {
       try {
         const response = await fetch(`https://disease.sh/v3/covid-19/countries?allowNull=true`);
         const json = await response.json();
+        if (!response.ok) {
+          throw json.message;
+        }
         setAllCountries({ data: json });
         setAvailableCountries(json.map(({ country }) => country));
       } catch (err) {
@@ -101,6 +104,9 @@ export default function App() {
           `https://disease.sh/v3/covid-19/historical/${selectedCountry}?lastdays=${days}`
         );
         const json = await response.json();
+        if (!response.ok) {
+          throw json.message;
+        }
         const newData = [];
 
         if (!json.timeline) {
@@ -174,14 +180,14 @@ export default function App() {
     <div className="App">
       {loading && (
         <div className="app-loader">
-          <button className="button is-loading">Loading</button>
+          {!errorMessage && <button className="button is-loading">Loading</button>}
+          {errorMessage && (
+            <>
+              <div>{errorMessage}</div>
+              <a href={`/#/${DEFAULT_COUNTRY}`}>Refresh</a>
+            </>
+          )}
         </div>
-      )}
-      {errorMessage && (
-        <>
-          <div>{errorMessage}</div>
-          <a href={`/#/${DEFAULT_COUNTRY}`}>Refresh</a>
-        </>
       )}
       {!loading && !errorMessage && (
         <>
