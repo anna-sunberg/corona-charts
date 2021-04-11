@@ -1,13 +1,6 @@
 import * as React from 'react';
 import { isEqual, startOfDay, sub } from 'date-fns';
-import {
-  ChartData,
-  Country,
-  CountryData,
-  HistoricalData,
-  RecentData,
-  VaccinationData
-} from './types';
+import { ChartData, CountryData, HistoricalData, RecentData, VaccinationData } from './types';
 
 type UseChartDataProps = {
   historicalData: HistoricalData;

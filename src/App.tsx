@@ -11,6 +11,7 @@ import { useChartData, useRecentData, useVaccinationData } from './useChartData'
 import './styles.css';
 import 'react-resizable/css/styles.css';
 import { Country, CountryData, HistoricalData, HistoricalDataPoint, ParamTypes } from './types';
+import { nameToStartCase } from './helpers';
 
 const DEFAULT_COUNTRY = 'finland';
 
@@ -38,7 +39,9 @@ export default function App() {
 
   const selectCountry = (c: Country) => {
     setLoading(true);
+    setErrorMessage(null);
     history.push(`/${c}`);
+    return false;
   };
 
   React.useEffect(() => {
@@ -136,7 +139,7 @@ export default function App() {
       } catch (err) {
         console.error(err);
         setHistoricalData(null);
-        setErrorMessage(`Failed to fetch historical data for country '${selectedCountryName}'`);
+        setErrorMessage(`Failed to fetch historical data for country "${selectedCountryName}"`);
       }
     }
     fetchData();
@@ -175,51 +178,58 @@ export default function App() {
   }, [historicalData, countryData, recentData, vaccinationData]);
 
   React.useEffect(() => {
-    if (!loading) {
-      setErrorMessage(null);
+    if (errorMessage) {
+      setLoading(false);
     }
-  }, [loading]);
+  }, [errorMessage]);
 
   return (
     <div className="App">
-      {loading && (
-        <div className="app-loader">
-          {!errorMessage && <button className="button is-loading">Loading</button>}
-          {errorMessage && (
-            <>
-              <div>{errorMessage}</div>
-              <a href={`/#/${DEFAULT_COUNTRY}`}>Refresh</a>
-            </>
-          )}
-        </div>
-      )}
-      {!loading && !errorMessage && (
-        <>
-          <CountrySelector
-            allCountries={allCountries}
-            country={selectedCountryName}
-            favoriteCountries={favoriteCountries}
-            removeFavoriteCountry={removeFavoriteCountry}
-          />
-          {countryData && (
+      <>
+        <CountrySelector
+          allCountries={allCountries}
+          country={selectedCountryName}
+          favoriteCountries={favoriteCountries}
+          removeFavoriteCountry={removeFavoriteCountry}
+        />
+        {!errorMessage && !loading && countryData && (
+          <>
             <InfoCards
               countryData={countryData}
               vaccinationData={vaccinationData}
               recentData={recentData}
             />
-          )}
-          <ResizableBox height={400} width={Infinity}>
-            <div style={{ width: '100%', height: '100%' }}>
-              {historicalData && countryData && (
-                <>
-                  <CasesDeathsChart countryData={countryData} chartData={chartData} />
-                  <TrendLineChart chartData={chartData} />
-                </>
-              )}
-            </div>
-          </ResizableBox>
-        </>
-      )}
+            <ResizableBox height={400} width={Infinity}>
+              <div style={{ width: '100%', height: '100%' }}>
+                {historicalData && countryData && (
+                  <>
+                    <CasesDeathsChart countryData={countryData} chartData={chartData} />
+                    <TrendLineChart chartData={chartData} />
+                  </>
+                )}
+              </div>
+            </ResizableBox>
+          </>
+        )}
+        {(loading || errorMessage) && (
+          <div className="app-loader">
+            {!errorMessage && <button className="button is-loading">Loading</button>}
+            {errorMessage && (
+              <>
+                <div className="mb-2">{errorMessage}</div>
+                <div className="mb-2">
+                  <a href="/">Refresh</a>
+                </div>
+                <div>
+                  <a href="/#" onClick={() => selectCountry(DEFAULT_COUNTRY)} className="mb-2">
+                    Go to {nameToStartCase(DEFAULT_COUNTRY)} 😢
+                  </a>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </>
     </div>
   );
 }
