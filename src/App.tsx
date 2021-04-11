@@ -1,5 +1,5 @@
 import * as React from 'react';
-import CaseDeathsChart from './CaseDeathsChart';
+import CasesDeathsChart from './CasesDeathsChart';
 import TrendLineChart from './TrendLineChart';
 import CountrySelector from './CountrySelector';
 import InfoCards from './InfoCards';
@@ -221,7 +221,7 @@ export default function App() {
             <div style={{ width: '100%', height: '100%' }}>
               {historicalData && countryData && (
                 <>
-                  <CaseDeathsChart countryData={countryData} chartData={chartData} />
+                  <CasesDeathsChart countryData={countryData} chartData={chartData} />
                   <TrendLineChart chartData={chartData} />
                 </>
               )}

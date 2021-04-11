@@ -18,8 +18,14 @@ import {
   roundToHundred,
   useWindowDimensions
 } from './helpers';
+import { ChartData, CountryData } from './types';
 
-const CaseDeathsChart = ({ countryData, chartData }) => {
+type CasesDeathsChartProps = {
+  countryData: CountryData;
+  chartData: ChartData;
+};
+
+const CasesDeathsChart = ({ countryData, chartData }: CasesDeathsChartProps) => {
   const { width } = useWindowDimensions();
 
   return (
@@ -76,11 +82,11 @@ const CaseDeathsChart = ({ countryData, chartData }) => {
             yAxisId={1}
             strokeWidth={2}
           />
-          <Bar type="monotone" dot={false} dataKey="deaths" fill="#FF595E" yAxisId={1} />
+          <Bar dataKey="deaths" fill="#FF595E" yAxisId={1} />
         </ComposedChart>
       </ResponsiveContainer>
     </>
   );
 };
 
-export default CaseDeathsChart;
+export default CasesDeathsChart;

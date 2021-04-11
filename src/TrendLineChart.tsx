@@ -11,8 +11,9 @@ import {
 } from 'recharts';
 
 import { formatUnixTime, labelFormatter, nameToStartCase, useWindowDimensions } from './helpers';
+import { ChartData } from './types';
 
-const TrendLineChart = ({ chartData }) => {
+const TrendLineChart = ({ chartData }: { chartData: ChartData }) => {
   const { width } = useWindowDimensions();
   const trendLineChartData = chartData.slice(chartData.length - 31);
 
