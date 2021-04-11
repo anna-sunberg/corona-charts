@@ -39,29 +39,38 @@ export const useRecentData = ({ historicalData }) => {
     if (!historicalData) {
       return;
     }
+    const yesterdayDt = startOfDay(sub(new Date(), { days: 1 }));
     const yesterdayIndex = historicalData.data.findIndex(({ date }) =>
-      isEqual(startOfDay(date), startOfDay(sub(new Date(), { days: 1 })))
+      isEqual(startOfDay(date), yesterdayDt)
     );
-    if (yesterdayIndex === -1) {
-      setRecentData(null);
-      return;
-    }
+    const dayBeforeDt = startOfDay(sub(new Date(), { days: 2 }));
+    const dayBeforeIndex = historicalData.data.findIndex(({ date }) =>
+      isEqual(startOfDay(date), dayBeforeDt)
+    );
 
-    const yesterday = {
-      cases:
-        historicalData.data[yesterdayIndex].cases - historicalData.data[yesterdayIndex - 1].cases,
-      deaths:
-        historicalData.data[yesterdayIndex].deaths - historicalData.data[yesterdayIndex - 1].deaths
-    };
-    const twoDaysAgo = {
-      cases:
-        historicalData.data[yesterdayIndex - 1].cases -
-        historicalData.data[yesterdayIndex - 2].cases,
-      deaths:
-        historicalData.data[yesterdayIndex - 1].deaths -
-        historicalData.data[yesterdayIndex - 2].deaths
-    };
-    setRecentData([yesterday, twoDaysAgo]);
+    const yesterday =
+      yesterdayIndex > -1
+        ? {
+            cases:
+              historicalData.data[yesterdayIndex].cases -
+              historicalData.data[yesterdayIndex - 1].cases,
+            deaths:
+              historicalData.data[yesterdayIndex].deaths -
+              historicalData.data[yesterdayIndex - 1].deaths
+          }
+        : null;
+    const dayBefore =
+      dayBeforeIndex > -1
+        ? {
+            cases:
+              historicalData.data[dayBeforeIndex].cases -
+              historicalData.data[dayBeforeIndex - 1].cases,
+            deaths:
+              historicalData.data[dayBeforeIndex].deaths -
+              historicalData.data[dayBeforeIndex - 1].deaths
+          }
+        : null;
+    setRecentData([yesterday, dayBefore]);
   }, [historicalData]);
 
   return { recentData };

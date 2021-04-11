@@ -3,6 +3,12 @@ import { formatNull } from './helpers';
 import { format } from 'date-fns';
 
 const InfoCards = ({ countryData, recentData, vaccinationData }) => {
+  const renderValue = (day, key) => {
+    if (!day) {
+      return formatNull(null);
+    }
+    return formatNull(day[key]);
+  };
   const [yesterday, twoDaysAgo] = recentData;
   return (
     <div className="columns is-desktop InfoCards">
@@ -14,10 +20,11 @@ const InfoCards = ({ countryData, recentData, vaccinationData }) => {
             {formatNull(countryData.todayDeaths)})
           </div>
           <div>
-            Yesterday: 🦠 {yesterday.cases} (☠️ {yesterday.deaths})
+            Yesterday: 🦠 {renderValue(yesterday, 'cases')} (☠️ {renderValue(yesterday, 'deaths')})
           </div>
           <div>
-            2 days ago: 🦠 {twoDaysAgo.cases} (☠️ {twoDaysAgo.deaths})
+            2 days ago: 🦠 {renderValue(twoDaysAgo, 'cases')} (☠️{' '}
+            {renderValue(twoDaysAgo, 'deaths')})
           </div>
         </div>
       </div>
