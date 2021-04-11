@@ -10,14 +10,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useChartData, useRecentData, useVaccinationData } from './useChartData';
 import './styles.css';
 import 'react-resizable/css/styles.css';
-import {
-  AllCountriesData,
-  Country,
-  CountryData,
-  HistoricalData,
-  HistoricalDataPoint,
-  ParamTypes
-} from './types';
+import { Country, CountryData, HistoricalData, HistoricalDataPoint, ParamTypes } from './types';
 
 const DEFAULT_COUNTRY = 'finland';
 
@@ -28,7 +21,7 @@ export default function App() {
   const [initialCountry] = useLocalStorage<Country>('favoriteCountry', DEFAULT_COUNTRY);
   const { country: paramCountry } = useParams<ParamTypes>();
   const history = useHistory();
-  const [selectedCountry, setSelectedCountry] = React.useState<Country>(
+  const [selectedCountryName, setSelectedCountryName] = React.useState<Country>(
     paramCountry || initialCountry
   );
   // TODO: remove temporary fix for faulty values in local storage
@@ -38,13 +31,9 @@ export default function App() {
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
   const [historicalData, setHistoricalData] = React.useState<HistoricalData>(null);
   const [countryData, setCountryData] = React.useState<CountryData | null>(null);
-  const [allCountries, setAllCountries] = React.useState<AllCountriesData>(null);
-  const [availableCountries, setAvailableCountries] = React.useState<string[]>([]);
+  const [allCountries, setAllCountries] = React.useState<CountryData[]>([]);
   const { chartData } = useChartData({ historicalData, countryData });
-  const { vaccinationData } = useVaccinationData({
-    selectedCountry,
-    countryData
-  });
+  const { vaccinationData } = useVaccinationData({ countryData });
   const { recentData } = useRecentData({ historicalData });
 
   const selectCountry = (c: Country) => {
@@ -56,33 +45,33 @@ export default function App() {
     if (!paramCountry) {
       return;
     }
-    setSelectedCountry(paramCountry);
+    setSelectedCountryName(paramCountry);
   }, [paramCountry]);
 
   const removeFavoriteCountry = (countryToRemove: Country) => {
     const newCountries = favoriteCountries.filter((c) => c.toLowerCase() !== countryToRemove);
     if (!newCountries.length) {
-      newCountries.push(selectedCountry);
+      newCountries.push(selectedCountryName);
     }
-    if (!newCountries.find((c) => c.toLowerCase() === selectedCountry)) {
+    if (!newCountries.find((c) => c.toLowerCase() === selectedCountryName)) {
       selectCountry(newCountries[0]);
     }
     setFavoriteCountries(newCountries);
   };
 
   React.useEffect(() => {
-    if (!favoriteCountries.find((c) => c === selectedCountry)) {
-      setFavoriteCountries([...favoriteCountries, selectedCountry]);
+    if (!favoriteCountries.find((c) => c === selectedCountryName)) {
+      setFavoriteCountries([...favoriteCountries, selectedCountryName]);
     }
-  }, [favoriteCountries, selectedCountry]);
+  }, [favoriteCountries, selectedCountryName]);
 
   React.useEffect(() => {
     writeStorage('favoriteCountries', favoriteCountries);
   }, [favoriteCountries]);
 
   React.useEffect(() => {
-    writeStorage('favoriteCountry', selectedCountry);
-  }, [selectedCountry]);
+    writeStorage('favoriteCountry', selectedCountryName);
+  }, [selectedCountryName]);
 
   React.useEffect(() => {
     async function fetchAllCountries() {
@@ -93,8 +82,7 @@ export default function App() {
           throw await response.text();
         }
         const json: CountryData[] = await response.json();
-        setAllCountries({ data: json });
-        setAvailableCountries(json.map(({ country }) => country));
+        setAllCountries(json);
       } catch (err) {
         console.error(err);
         setErrorMessage(`Failed to fetch countries`);
@@ -105,13 +93,16 @@ export default function App() {
 
   React.useEffect(() => {
     async function fetchData() {
-      if (!allCountries) {
+      if (!allCountries.length) {
         return;
       }
       setLoading(true);
       try {
+        const selectedCountry: CountryData = allCountries.find(
+          ({ country }) => country.toLowerCase() === selectedCountryName
+        )!;
         const response = await fetch(
-          `https://disease.sh/v3/covid-19/historical/${selectedCountry}?lastdays=${days}`
+          `https://disease.sh/v3/covid-19/historical/${selectedCountry.countryInfo.iso3}?lastdays=${days}`
         );
         const json = await response.json();
         if (!response.ok) {
@@ -135,7 +126,7 @@ export default function App() {
         });
 
         setCountryData(
-          allCountries.data.find(({ country }) => country.toLowerCase() === selectedCountry) ||
+          allCountries.find(({ country }) => country.toLowerCase() === selectedCountryName) ||
             json[0]
         );
         setHistoricalData({
@@ -145,11 +136,11 @@ export default function App() {
       } catch (err) {
         console.error(err);
         setHistoricalData(null);
-        setErrorMessage(`Failed to fetch historical data for country '${selectedCountry}'`);
+        setErrorMessage(`Failed to fetch historical data for country '${selectedCountryName}'`);
       }
     }
     fetchData();
-  }, [selectedCountry, days, allCountries]);
+  }, [selectedCountryName, days, allCountries]);
 
   React.useEffect(() => {
     if (
@@ -205,8 +196,8 @@ export default function App() {
       {!loading && !errorMessage && (
         <>
           <CountrySelector
-            allCountries={availableCountries}
-            country={selectedCountry}
+            allCountries={allCountries}
+            country={selectedCountryName}
             favoriteCountries={favoriteCountries}
             removeFavoriteCountry={removeFavoriteCountry}
           />

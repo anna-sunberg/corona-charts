@@ -12,6 +12,9 @@ export type DayData = {
 export type CountryData = {
   updated: number;
   country: string;
+  countryInfo: {
+    iso3: string;
+  };
   cases: number | null;
   todayCases: number | null;
   deaths: number | null;

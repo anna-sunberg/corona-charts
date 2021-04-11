@@ -1,11 +1,11 @@
 import * as React from 'react';
 import classnames from 'classnames';
-import { Country } from './types';
+import { Country, CountryData } from './types';
 
 type CountrySelectorProps = {
   removeFavoriteCountry: (country: Country) => void;
   country: Country;
-  allCountries: Country[];
+  allCountries: CountryData[];
   favoriteCountries: Country[];
 };
 const CountrySelector = ({
@@ -30,7 +30,8 @@ const CountrySelector = ({
     return () => document.removeEventListener('mousedown', listener);
   }, []);
 
-  const getFormatted = (country: string) => allCountries.find((s) => s.toLowerCase() === country);
+  const getFormatted = (country: string) =>
+    allCountries.find((s) => s.country.toLowerCase() === country)?.country;
 
   const onRemoveFavoriteCountry = (e: React.MouseEvent, favoriteCountry: string) => {
     e.preventDefault();
@@ -104,7 +105,7 @@ const CountrySelector = ({
               })}
             <hr className="dropdown-divider" />
             {allCountries
-              .map((entry) => [entry.toLowerCase(), entry])
+              .map((entry) => [entry.country.toLowerCase(), entry.country])
               .filter(([entry]) => favoriteCountries.indexOf(entry) === -1)
               .filter(([entry]) => entry.indexOf(inputValue.toLowerCase()) > -1)
               .map(([entry, entryFormatted], i) => {

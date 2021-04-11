@@ -96,12 +96,10 @@ export const useRecentData = ({ historicalData }: UseRecentDataProps): UseRecent
 
 type UseVaccinationDataProps = {
   countryData: CountryData | null;
-  selectedCountry: Country;
 };
 type UseVaccinationData = { vaccinationData: VaccinationData };
 export const useVaccinationData = ({
-  countryData,
-  selectedCountry
+  countryData
 }: UseVaccinationDataProps): UseVaccinationData => {
   const [vaccinationData, setVaccinationData] = React.useState<VaccinationData>(null);
 
@@ -112,7 +110,7 @@ export const useVaccinationData = ({
       }
       try {
         const response = await fetch(
-          `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${selectedCountry}`
+          `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${countryData.countryInfo.iso3}`
         );
         const json = await response.json();
         if (!json.timeline) {
@@ -129,7 +127,7 @@ export const useVaccinationData = ({
       }
     }
     fetchData();
-  }, [selectedCountry, countryData]);
+  }, [countryData]);
 
   return { vaccinationData };
 };
