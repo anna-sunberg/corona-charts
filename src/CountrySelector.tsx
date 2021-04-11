@@ -1,15 +1,27 @@
 import * as React from 'react';
 import classnames from 'classnames';
+import { Country } from './types';
 
-const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favoriteCountries }) => {
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState('');
-  const dropdownRef = React.useRef(null);
-  const inputRef = React.useRef(null);
+type CountrySelectorProps = {
+  removeFavoriteCountry: (country: Country) => void;
+  country: Country;
+  allCountries: Country[];
+  favoriteCountries: Country[];
+};
+const CountrySelector = ({
+  removeFavoriteCountry,
+  country,
+  allCountries,
+  favoriteCountries
+}: CountrySelectorProps) => {
+  const [dropdownOpen, setDropdownOpen] = React.useState<boolean>(false);
+  const [inputValue, setInputValue] = React.useState<string>('');
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    const listener = (e) => {
-      if (!dropdownRef.current.contains(e.target)) {
+    const listener = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         closeDropdown();
         e.stopPropagation();
       }
@@ -18,9 +30,9 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
     return () => document.removeEventListener('mousedown', listener);
   }, []);
 
-  const getFormatted = (country) => allCountries.find((s) => s.toLowerCase() === country);
+  const getFormatted = (country: string) => allCountries.find((s) => s.toLowerCase() === country);
 
-  const onRemoveFavoriteCountry = (e, favoriteCountry) => {
+  const onRemoveFavoriteCountry = (e: React.MouseEvent, favoriteCountry: string) => {
     e.preventDefault();
     e.stopPropagation();
     removeFavoriteCountry(favoriteCountry);
@@ -41,7 +53,7 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
             aria-controls="dropdown-menu"
             onClick={() => {
               setDropdownOpen(!dropdownOpen);
-              setTimeout(() => inputRef.current.focus(), 50);
+              setTimeout(() => inputRef.current && inputRef.current.focus(), 50);
             }}
           >
             <span>{getFormatted(country)}</span>
