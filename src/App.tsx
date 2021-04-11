@@ -25,10 +25,7 @@ export default function App() {
   const [selectedCountryName, setSelectedCountryName] = React.useState<Country>(
     paramCountry || initialCountry
   );
-  // TODO: remove temporary fix for faulty values in local storage
-  const [favoriteCountries, setFavoriteCountries] = React.useState<Country[]>(
-    initialCountries.filter((c) => c && c !== 'undefined').map((c) => c.toLowerCase())
-  );
+  const [favoriteCountries, setFavoriteCountries] = React.useState<Country[]>(initialCountries);
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
   const [historicalData, setHistoricalData] = React.useState<HistoricalData>(null);
   const [countryData, setCountryData] = React.useState<CountryData | null>(null);
