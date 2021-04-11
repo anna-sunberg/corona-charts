@@ -1,8 +1,24 @@
 import * as React from 'react';
 import { isEqual, startOfDay, sub } from 'date-fns';
+import {
+  ChartData,
+  Country,
+  CountryData,
+  HistoricalData,
+  RecentData,
+  VaccinationData
+} from './types';
 
-export const useChartData = ({ historicalData, countryData }) => {
-  const [chartData, setChartData] = React.useState([]);
+type UseChartDataProps = {
+  historicalData: HistoricalData;
+  countryData: CountryData | null;
+};
+
+export const useChartData = ({
+  historicalData,
+  countryData
+}: UseChartDataProps): { chartData: ChartData } => {
+  const [chartData, setChartData] = React.useState<ChartData>([]);
 
   React.useEffect(() => {
     if (!historicalData || !countryData) {
@@ -32,8 +48,10 @@ export const useChartData = ({ historicalData, countryData }) => {
   return { chartData };
 };
 
-export const useRecentData = ({ historicalData }) => {
-  const [recentData, setRecentData] = React.useState(null);
+type UseRecentDataProps = { historicalData: HistoricalData };
+type UseRecentData = { recentData: RecentData };
+export const useRecentData = ({ historicalData }: UseRecentDataProps): UseRecentData => {
+  const [recentData, setRecentData] = React.useState<RecentData>([]);
 
   React.useEffect(() => {
     if (!historicalData) {
@@ -76,39 +94,42 @@ export const useRecentData = ({ historicalData }) => {
   return { recentData };
 };
 
-export const useVaccinationData = ({ countryData, selectedCountry }) => {
-  const [vaccinationData, setVaccinationData] = React.useState(null);
-  const [rawData, setRawData] = React.useState(null);
+type UseVaccinationDataProps = {
+  countryData: CountryData | null;
+  selectedCountry: Country;
+};
+type UseVaccinationData = { vaccinationData: VaccinationData };
+export const useVaccinationData = ({
+  countryData,
+  selectedCountry
+}: UseVaccinationDataProps): UseVaccinationData => {
+  const [vaccinationData, setVaccinationData] = React.useState<VaccinationData>(null);
 
   React.useEffect(() => {
     async function fetchData() {
+      if (!countryData) {
+        return;
+      }
       try {
         const response = await fetch(
           `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${selectedCountry}`
         );
         const json = await response.json();
         if (!json.timeline) {
-          setRawData(null);
+          setVaccinationData(null);
           return;
         }
-        setRawData(json.timeline);
+        const rawData = json.timeline;
+        const keys = Object.keys(rawData);
+        const coverage = rawData[keys[keys.length - 1]];
+        const percentage = Math.round((coverage / countryData.population) * 10000) / 100;
+        setVaccinationData({ coverage, percentage });
       } catch (err) {
         console.error('Vaccination data fetch failed', err);
       }
     }
     fetchData();
-  }, [selectedCountry]);
-
-  React.useEffect(() => {
-    if (!rawData || !countryData) {
-      setVaccinationData(null);
-      return;
-    }
-    const keys = Object.keys(rawData);
-    const coverage = rawData[keys[keys.length - 1]];
-    const percentage = Math.round((coverage / countryData.population) * 10000) / 100;
-    setVaccinationData({ coverage, percentage });
-  }, [rawData, countryData]);
+  }, [selectedCountry, countryData]);
 
   return { vaccinationData };
 };

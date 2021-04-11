@@ -1,9 +1,16 @@
 import * as React from 'react';
 import { formatNull } from './helpers';
 import { format } from 'date-fns';
+import { CountryData, DayData, RecentData, VaccinationData } from './types';
 
-const InfoCards = ({ countryData, recentData, vaccinationData }) => {
-  const renderValue = (day, key) => {
+type Props = {
+  countryData: CountryData;
+  recentData: RecentData;
+  vaccinationData: VaccinationData;
+};
+
+const InfoCards = ({ countryData, recentData, vaccinationData }: Props) => {
+  const renderValue = (day: DayData | null, key: 'cases' | 'deaths') => {
     if (!day) {
       return formatNull(null);
     }

@@ -10,26 +10,36 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useChartData, useRecentData, useVaccinationData } from './useChartData';
 import './styles.css';
 import 'react-resizable/css/styles.css';
+import {
+  AllCountriesData,
+  Country,
+  CountryData,
+  HistoricalData,
+  HistoricalDataPoint,
+  ParamTypes
+} from './types';
 
 const DEFAULT_COUNTRY = 'finland';
 
 export default function App() {
-  const [loading, setLoading] = React.useState(true);
-  const [errorMessage, setErrorMessage] = React.useState(null);
-  const [initialCountries] = useLocalStorage('favoriteCountries', []);
-  const [initialCountry] = useLocalStorage('favoriteCountry', DEFAULT_COUNTRY);
-  const { country: paramCountry } = useParams();
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [initialCountries] = useLocalStorage<Country[]>('favoriteCountries', []);
+  const [initialCountry] = useLocalStorage<Country>('favoriteCountry', DEFAULT_COUNTRY);
+  const { country: paramCountry } = useParams<ParamTypes>();
   const history = useHistory();
-  const [selectedCountry, setSelectedCountry] = React.useState(paramCountry || initialCountry);
+  const [selectedCountry, setSelectedCountry] = React.useState<Country>(
+    paramCountry || initialCountry
+  );
   // TODO: remove temporary fix for faulty values in local storage
-  const [favoriteCountries, setFavoriteCountries] = React.useState(
+  const [favoriteCountries, setFavoriteCountries] = React.useState<Country[]>(
     initialCountries.filter((c) => c && c !== 'undefined').map((c) => c.toLowerCase())
   );
   const days = differenceInDays(new Date(), new Date(2020, 2, 1));
-  const [historicalData, setHistoricalData] = React.useState(null);
-  const [countryData, setCountryData] = React.useState(null);
-  const [allCountries, setAllCountries] = React.useState(null);
-  const [availableCountries, setAvailableCountries] = React.useState([]);
+  const [historicalData, setHistoricalData] = React.useState<HistoricalData>(null);
+  const [countryData, setCountryData] = React.useState<CountryData | null>(null);
+  const [allCountries, setAllCountries] = React.useState<AllCountriesData>(null);
+  const [availableCountries, setAvailableCountries] = React.useState<string[]>([]);
   const { chartData } = useChartData({ historicalData, countryData });
   const { vaccinationData } = useVaccinationData({
     selectedCountry,
@@ -37,7 +47,7 @@ export default function App() {
   });
   const { recentData } = useRecentData({ historicalData });
 
-  const selectCountry = (c) => {
+  const selectCountry = (c: Country) => {
     setLoading(true);
     history.push(`/${c}`);
   };
@@ -49,7 +59,7 @@ export default function App() {
     setSelectedCountry(paramCountry);
   }, [paramCountry]);
 
-  const removeFavoriteCountry = (countryToRemove) => {
+  const removeFavoriteCountry = (countryToRemove: Country) => {
     const newCountries = favoriteCountries.filter((c) => c.toLowerCase() !== countryToRemove);
     if (!newCountries.length) {
       newCountries.push(selectedCountry);
@@ -79,10 +89,10 @@ export default function App() {
       setLoading(true);
       try {
         const response = await fetch(`https://disease.sh/v3/covid-19/countries?allowNull=true`);
-        const json = await response.json();
         if (!response.ok) {
-          throw json.message;
+          throw await response.text();
         }
+        const json: CountryData[] = await response.json();
         setAllCountries({ data: json });
         setAvailableCountries(json.map(({ country }) => country));
       } catch (err) {
@@ -107,7 +117,7 @@ export default function App() {
         if (!response.ok) {
           throw json.message;
         }
-        const newData = [];
+        const newData: HistoricalDataPoint[] = [];
 
         if (!json.timeline) {
           setHistoricalData(null);
@@ -128,7 +138,10 @@ export default function App() {
           allCountries.data.find(({ country }) => country.toLowerCase() === selectedCountry) ||
             json[0]
         );
-        setHistoricalData({ country: json.country, data: newData.sort(compareAsc) });
+        setHistoricalData({
+          country: json.country,
+          data: newData.sort((a, b) => compareAsc(a.date, b.date))
+        });
       } catch (err) {
         console.error(err);
         setHistoricalData(null);
@@ -157,7 +170,7 @@ export default function App() {
             cases:
               countryData.todayCases + historicalData.data[historicalData.data.length - 1].cases,
             deaths:
-              countryData.todayDeaths + historicalData.data[historicalData.data.length - 1].deaths
+              countryData.todayDeaths! + historicalData.data[historicalData.data.length - 1].deaths
           }
         ]
       });
@@ -195,17 +208,16 @@ export default function App() {
             allCountries={availableCountries}
             country={selectedCountry}
             favoriteCountries={favoriteCountries}
-            selectCountry={selectCountry}
             removeFavoriteCountry={removeFavoriteCountry}
           />
-          <InfoCards
-            countryData={countryData}
-            historicalData={historicalData}
-            selectedCountry={selectedCountry}
-            vaccinationData={vaccinationData}
-            recentData={recentData}
-          />
-          <ResizableBox height={400}>
+          {countryData && (
+            <InfoCards
+              countryData={countryData}
+              vaccinationData={vaccinationData}
+              recentData={recentData}
+            />
+          )}
+          <ResizableBox height={400} width={Infinity}>
             <div style={{ width: '100%', height: '100%' }}>
               {historicalData && countryData && (
                 <>
