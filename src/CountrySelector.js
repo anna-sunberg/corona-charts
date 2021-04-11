@@ -72,24 +72,22 @@ const CountrySelector = ({ removeFavoriteCountry, country, allCountries, favorit
               .map((_favoriteCountry, i) => {
                 const favoriteCountry = _favoriteCountry.toLowerCase();
                 return (
-                  <>
-                    <a
-                      className={classnames('dropdown-item', {
-                        'is-active': favoriteCountry.toLowerCase() === country
-                      })}
-                      onClick={closeDropdown}
-                      href={`/#/${favoriteCountry}`}
-                      key={`${favoriteCountry}-${i}`}
+                  <a
+                    className={classnames('dropdown-item', {
+                      'is-active': favoriteCountry.toLowerCase() === country
+                    })}
+                    onClick={closeDropdown}
+                    href={`/#/${favoriteCountry}`}
+                    key={`${favoriteCountry}-${i}`}
+                  >
+                    <span>{getFormatted(favoriteCountry)}</span>
+                    <span
+                      className="icon is-small remove-favorite"
+                      onClick={(e) => onRemoveFavoriteCountry(e, favoriteCountry)}
                     >
-                      <span>{getFormatted(favoriteCountry)}</span>
-                      <span
-                        className="icon is-small remove-favorite"
-                        onClick={(e) => onRemoveFavoriteCountry(e, favoriteCountry)}
-                      >
-                        <i className="fa fa-times" aria-hidden="true"></i>
-                      </span>
-                    </a>
-                  </>
+                      <i className="fa fa-times" aria-hidden="true"></i>
+                    </span>
+                  </a>
                 );
               })}
             <hr className="dropdown-divider" />
