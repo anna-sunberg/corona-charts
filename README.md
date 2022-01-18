@@ -1,6 +1,6 @@
 # Corona charts
 
-🦠 See at [https://corona-charts.xyz/](https://corona-charts.xyz/) 🦠
+🦠 See at [https://nifty-swartz-0113e7.netlify.app/#/](https://nifty-swartz-0113e7.netlify.app/) 🦠
 
 A set of charts to visualize corona situation per country. 
 - Calculates and displays 14 day trendlines for new cases and deaths
